@@ -61,10 +61,6 @@ public class PlayerMover : MonoBehaviour
                 _animator.SetRunningAnimation(false);
             }
         }
-        else
-        {
-            _moveDirection += gravityDirection * 30 * Time.deltaTime;
-        }
 
         _controller.Move(_moveDirection * Time.deltaTime);
 
