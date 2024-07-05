@@ -26,7 +26,6 @@ public class CatchedResourceHandler : MonoBehaviour
             case Iron iron:
                 _ironCatched.Add(resource);
                 IronAmountChanged?.Invoke(_ironCatched.Count);
-                Debug.Log(_ironCatched.Count);
                 break;
         }
     }
