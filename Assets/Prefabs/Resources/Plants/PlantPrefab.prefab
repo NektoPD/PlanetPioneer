@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 5309489579016331406}
   - component: {fileID: 8618014258617507370}
   - component: {fileID: 7781824272006391379}
+  - component: {fileID: -6464095670864889124}
+  - component: {fileID: 3139593801078942025}
   m_Layer: 0
   m_Name: PlantPrefab
   m_TagString: Untagged
@@ -29,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 6.0843, y: 5.7152, z: -3.141}
-  m_LocalScale: {x: 0.041198213, y: 0.041198213, z: 0.041198213}
+  m_LocalScale: {x: 0.06268308, y: 0.06268308, z: 0.06268308}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -107,3 +109,28 @@ CapsuleCollider:
   m_Height: 5.8755474
   m_Direction: 1
   m_Center: {x: -0.24503523, y: 2.5, z: -0.0067169666}
+--- !u!114 &-6464095670864889124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2261648261862207639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08c888ad284a8334c93b358f4f9e64ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3139593801078942025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2261648261862207639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21cd4f4e44323c34d8bb765c0d969d36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _planet: {fileID: 0}

@@ -1,42 +1,88 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(WeaponLevelChecker))]
+[RequireComponent(typeof(WeaponView))]
 [RequireComponent(typeof(ResourceCatcher))]
 [RequireComponent(typeof(CatchedResourceHandler))]
+[RequireComponent(typeof(WeaponUpgrader))]
 public class Weapon : MonoBehaviour
 {
     private PlayerInput _playerInput;
     private ResourceCatcher _resourceCatcher;
     private CatchedResourceHandler _resourceCatcherHandler;
-
-    public ResourceCatcher ResourceCatcher => _resourceCatcher;
+    private WeaponUpgrader _upgrader;
+    private IUpgradeSystem _upgradeSystem;
+    private WeaponView _weaponView;
+    private WeaponLevelChecker _weaponLevelChecker;
 
     public event Action ShootButtonPressed;
+    public event Action StartedGatheringResources;
+    public event Action StopedGatheringResources;
+
+    public ResourceCatcher ResourceCatcher => _resourceCatcher;
 
     private void Awake()
     {
         _resourceCatcher = GetComponent<ResourceCatcher>();
         _resourceCatcherHandler = GetComponent<CatchedResourceHandler>();
+        _upgrader = GetComponent<WeaponUpgrader>();
+        _weaponView = GetComponent<WeaponView>();
+        _weaponLevelChecker = GetComponent<WeaponLevelChecker>();
 
         _playerInput = new PlayerInput();
     }
+
     private void OnEnable()
     {
         _playerInput.Enable();
+
+        _resourceCatcher.StartedGatheringResources += ProcessResourceGatherStart;
+        _resourceCatcher.StoppedGatheringResources += ProcessResourceGatherEnd;
     }
 
     private void Start()
     {
         _resourceCatcher.SetWeapon(this);
+        _resourceCatcher.SetCapacityChecker(_resourceCatcherHandler);
         _resourceCatcherHandler.SetWeapon(this);
         _playerInput.Player.Gather.performed += ctx => ShootButtonPressed?.Invoke();
+
+        _weaponLevelChecker.SetWeaponUpgrader(_upgrader);
     }
 
     private void OnDisable()
     {
         _playerInput.Disable();
+        _resourceCatcher.StartedGatheringResources -= ProcessResourceGatherStart;
+        _resourceCatcher.StoppedGatheringResources -= ProcessResourceGatherEnd;
+        _upgradeSystem.WeaponUpgraded -= _upgrader.UpgradeWeapon;
+    }
+
+    public bool CanCollectResource(Resource resource)
+    {
+        return _weaponLevelChecker.IsWeaponLevelSufficient(resource);
+    }
+
+    public void SetUpgradeSystem(IUpgradeSystem upgradeSystem)
+    {
+        if (upgradeSystem == null)
+            throw new ArgumentNullException(nameof(upgradeSystem));
+
+        if (_upgradeSystem != null)
+            return;
+
+        _upgradeSystem = upgradeSystem;
+        _upgradeSystem.WeaponUpgraded += _upgrader.UpgradeWeapon;
+    }
+
+    private void ProcessResourceGatherStart()
+    {
+        StartedGatheringResources?.Invoke();
+    }
+
+    private void ProcessResourceGatherEnd()
+    {
+        StopedGatheringResources?.Invoke();
     }
 }

@@ -1,62 +1,83 @@
-using System.Linq.Expressions;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceSpawner : ObjectPool<Resource>
 {
+    private const string NoAvailableSpawnPointsErrorMessage = "No spawn points";
+
     [SerializeField] private Resource _prefab;
     [SerializeField] private int _spawnCount = 10;
+    [SerializeField] private BaseSellingSystem _sellingSystem;
 
-    private Collider _collider;
-    private Vector3 _spawnAreaMin;
-    private Vector3 _spawnAreaMax;
+    private readonly List<SpawnArea> _spawnPoints = new List<SpawnArea>();
 
     private void Awake()
     {
-        _collider = GetComponent<Collider>();
-
-        _spawnAreaMin = _collider.bounds.min;
-        _spawnAreaMax = _collider.bounds.max;
+        _spawnPoints.AddRange(GetComponentsInChildren<SpawnArea>());
 
         Initalize(_prefab);
     }
 
     private void Start()
     {
-        Spawn();
+        foreach (SpawnArea spawnArea in _spawnPoints)
+        {
+            SpawnInArea(spawnArea);
+        }
+    }
+
+    private void OnEnable()
+    {
+        _sellingSystem.GotResource += ReturnResourceToPull;
+        ObjectReturnedToPool += Spawn;
+
+    }
+
+    private void OnDisable()
+    {
+        _sellingSystem.GotResource -= ReturnResourceToPull;
+        ObjectReturnedToPool -= Spawn;
     }
 
     private void Spawn()
     {
+        if (_spawnPoints.Count == 0)
+            throw new InvalidOperationException(NoAvailableSpawnPointsErrorMessage);
+
+        List<SpawnArea> availableSpawnPoints = new List<SpawnArea>(_spawnPoints);
+
         for (int i = 0; i < _spawnCount; i++)
         {
-            Resource resource = null;
+            if (availableSpawnPoints.Count == 0)
+                break;
 
-            if (TryGetObject(out resource, _prefab))
+            int randomIndex = UnityEngine.Random.Range(0, availableSpawnPoints.Count);
+            SpawnArea selectedSpawnArea = availableSpawnPoints[randomIndex];
+            availableSpawnPoints.RemoveAt(randomIndex);
+
+            SpawnInArea(selectedSpawnArea);
+        }
+    }
+
+    private void SpawnInArea(SpawnArea spawnArea)
+    {
+        for (int i = 0; i < _spawnCount; i++)
+        {
+            if (TryGetObject(out Resource resource, _prefab))
             {
-                float randomXPosition = Random.Range(_spawnAreaMin.x, _spawnAreaMax.x);
-                float randomYPosition = Random.Range(_spawnAreaMin.y, _spawnAreaMax.y);
-
-                Vector3 spawnPosition = new Vector3(randomXPosition, randomYPosition, transform.position.z);
-
-               resource.transform.position = spawnPosition;
-               resource.gameObject.SetActive(true);
-            }
-            else
-            {
-                return;
+                spawnArea.SpawnResource(resource, PlanetPosition);
             }
         }
     }
 
-    private void OnDrawGizmos()
+    public void ReturnResourceToPull(Resource resource)
     {
-        if (_collider == null)
-            _collider = GetComponent<Collider>();
+        if(resource == null)
+            throw new ArgumentNullException(nameof(resource));
 
-        if (_collider != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(_collider.bounds.center, _collider.bounds.size);
-        }
+        PutObject(resource);
+        resource.SetInitScale();
+        resource.SetAbsorbedToFalse();
     }
 }

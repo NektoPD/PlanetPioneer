@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +11,10 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
     private readonly Queue<T> _queue = new Queue<T>();
     private readonly List<T> _activeObjects = new List<T>();
 
+    public event Action ObjectReturnedToPool;
+    
+    public Transform PlanetPosition => _planetPosition;
+
     protected void Initalize(T prefab)
     {
         for (int i = 0; i < _capacity; i++)
@@ -18,8 +22,8 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
             T spawnedObject = Instantiate(prefab, _container.transform.position, Quaternion.identity);
             spawnedObject.gameObject.SetActive(false);
 
-            if (spawnedObject.TryGetComponent<PlayerPlanetRotationConstrain>(out PlayerPlanetRotationConstrain constraint))
-                constraint.SetPlanetPosition(_planetPosition);
+            if (spawnedObject.TryGetComponent<PlanetRotationConstrain>(out PlanetRotationConstrain rotationConstaint))
+                rotationConstaint.SetPlanetPosition(_planetPosition);
 
             _queue.Enqueue(spawnedObject);
         }
@@ -31,23 +35,27 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
         {
             @object = _queue.Dequeue();
             _activeObjects.Add(@object);
-
-            return @object != null && @object.gameObject.activeSelf == false;
+            @object.gameObject.SetActive(true);
+            return true;
         }
         else
         {
-            @object = Instantiate(prefab, _container.transform);
-            @object.gameObject.SetActive(false);
-            _activeObjects.Add(@object);
-
-            return @object != null;
+            @object = Instantiate(prefab);
+            @object.GetComponent<PlanetRotationConstrain>().SetPlanetPosition(_planetPosition); //не очень
+            return true;
         }
     }
 
     protected void PutObject(T @object)
     {
-        _queue.Enqueue(@object);
+        if (@object == null)
+            throw new ArgumentNullException(nameof(@object));
+
         @object.gameObject.SetActive(false);
+        @object.transform.position = _container.transform.position;
         _activeObjects.Remove(@object);
+        _queue.Enqueue(@object);
+
+        ObjectReturnedToPool?.Invoke();
     }
 }
