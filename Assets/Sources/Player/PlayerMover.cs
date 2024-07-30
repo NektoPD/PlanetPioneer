@@ -10,7 +10,6 @@ public class PlayerMover : MonoBehaviour
 
     [SerializeField] private float _speed = 2.0f;
     [SerializeField] private float _turnSpeed = 400.0f;
-    [SerializeField] private Transform _planet;
     [SerializeField] private LayerMask _layerMask;
 
     private Rigidbody _rigidbody;

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 public class PlayerUpgrader : MonoBehaviour
 {
@@ -8,8 +9,7 @@ public class PlayerUpgrader : MonoBehaviour
     private const string PlayerMovingSpeedUpgradedMessage = "Player moving speed is now upgraded";
     private const string PlayerGatherRadiusUpgradedMessage = "Player gather speed in now upgraded";
 
-    [SerializeField] private UIPopUpWindowShower _windowShower;
-
+    private UIPopUpWindowShower _windowShower;
     private Player _player;
     private const int MaxPossibleUpgrades = 4;
 
@@ -20,6 +20,11 @@ public class PlayerUpgrader : MonoBehaviour
     public event Action UpgradedPlayerMovingSpeed;
     public event Action UpgradedGatherRadius;
 
+    [Inject]
+    private void Construct(UIServicesProvider UIServices)
+    {
+        _windowShower = UIServices.PopUpWindow;
+    }
 
     public void ProcessUpgrade()
     {

@@ -1,7 +1,4 @@
-using System.Runtime.Versioning;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshCollider))]
 public class SpawnArea : MonoBehaviour
@@ -39,15 +36,6 @@ public class SpawnArea : MonoBehaviour
         {
             resource.transform.position = randomPoint;
         }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Bounds bounds = GetComponent<MeshCollider>().bounds;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(bounds.center, bounds.size);
-
     }
 }
 

@@ -2,14 +2,13 @@ using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 public class ResourceCatcher : MonoBehaviour
 {
     private const float UpgradedLerpDuration = 1f;
     private const float UpgradedRadius = 1.2f;
 
-    [SerializeField] private UISliderShower _sliderShower;
-    [SerializeField] private UIPopUpWindowShower _popUpWindowShower;
     [SerializeField] private float _radius;
     [SerializeField] private float _distance = 5;
     [SerializeField] private LayerMask _resourceMask;
@@ -17,6 +16,8 @@ public class ResourceCatcher : MonoBehaviour
     [SerializeField] private float _lerpDuration;
     [SerializeField] private Vector3 _targetScale;
 
+    private UISliderShower _sliderShower;
+    private UIPopUpWindowShower _popUpWindowShower;
     private Weapon _weapon;
     private ICapacityChecker _capacityChecker;
     private Coroutine _gatheringCoroutine;
@@ -25,6 +26,13 @@ public class ResourceCatcher : MonoBehaviour
     public event Action<Resource> CatchedResource;
     public event Action StartedGatheringResources;
     public event Action StoppedGatheringResources;
+
+    [Inject]
+    private void Construct(UIServicesProvider UIServices)
+    {
+        _sliderShower = UIServices.UISlider;
+        _popUpWindowShower = UIServices.PopUpWindow;
+    }
 
     public IEnumerator LerpToGunPosition(Transform target)
     {
@@ -68,7 +76,7 @@ public class ResourceCatcher : MonoBehaviour
             if (_weapon.CanCollectResource(resource) == false)
             {
                 _popUpWindowShower.AddMessageToQueue($"Weapon level is not enough to collect {resourceType.Name}");
-                continue;
+                return;
             }
 
             if (_capacityChecker.IsMaxCapacityReached(resourceType))

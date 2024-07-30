@@ -8,6 +8,9 @@ public class UISliderShower : MonoBehaviour
 
     private float _startValue = 0;
     private float _endValue = 1;
+    private int _canvasAlphaVisible = 1;
+    private int _canvasAlphaInvisible = 0;
+
     private Coroutine _coroutine;
     private CanvasGroup _canvasGroup;
 
@@ -15,7 +18,7 @@ public class UISliderShower : MonoBehaviour
     {
         _canvasGroup = GetComponentInChildren<CanvasGroup>();
         _slider.value = _startValue;
-        _canvasGroup.alpha = 0;
+        _canvasGroup.alpha = _canvasAlphaInvisible;
     }
 
     public void ActivateSlider(float speed)
@@ -23,7 +26,7 @@ public class UISliderShower : MonoBehaviour
         if (_coroutine != null)
             return;
 
-        _canvasGroup.alpha = 1;
+        _canvasGroup.alpha = _canvasAlphaVisible;
         _coroutine = StartCoroutine(ChangeSliderValue(speed));
     }
 
@@ -40,7 +43,7 @@ public class UISliderShower : MonoBehaviour
 
         _slider.value = _endValue;
 
-        _canvasGroup.alpha = 0;
+        _canvasGroup.alpha = _canvasAlphaInvisible;
         _slider.value = _startValue;
         _coroutine = null;
     }

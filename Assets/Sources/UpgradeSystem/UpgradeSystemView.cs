@@ -16,8 +16,8 @@ public class UpgradeSystemView : MonoBehaviour
 
     [SerializeField] private BaseUpgrader _baseUpgrade;
     [SerializeField] private RocketBuilder _rocketBuilder;
-    [SerializeField] private WeaponUpgrader _weaponUpgrader;
-
+    
+    private WeaponUpgrader _weaponUpgrader;
     private UIUpgradeImageSlot[] _baseUpgradeSlots;
     private UIUpgradeImageSlot[] _weaponUpgradeSlots;
     private UIUpgradeImageSlot[] _rocketUpgradeSlots;
@@ -133,5 +133,13 @@ public class UpgradeSystemView : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void SetWeaponUpgrader(WeaponUpgrader weaponUpgrader)
+    {
+        if(weaponUpgrader == null)
+            throw new ArgumentNullException(nameof(weaponUpgrader));
+
+        _weaponUpgrader = weaponUpgrader;
     }
 }

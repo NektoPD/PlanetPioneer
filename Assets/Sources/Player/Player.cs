@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 [RequireComponent(typeof(PlayerMover))]
 [RequireComponent(typeof(PlayerUpgrader))]
@@ -8,12 +9,11 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerCollisionHandler))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private UpgradeSystem _upgradeSystem;
-    [SerializeField] private PlayerToBasePointerView _basePointerView;
-    [SerializeField] private BaseUpgrader _baseUpgrader;
-
+    private UpgradeSystem _upgradeSystem;
+    private PlayerToBasePointerView _basePointerView;
+    private BaseUpgrader _baseUpgrader;
     private CatchedResourceHandler _resourceHandler;
-    private PlayerResourcesVisabiltyView _resourcesView;
+    private PlayerResourcesView _resourcesView;
     private PlayerCollisionHandler _collisionHandler;
     private PlayerGoldHandler _goldHandler;
     private PlayerGoldView _goldView;
@@ -29,10 +29,18 @@ public class Player : MonoBehaviour
     public event Action ResourceRemovedFromBag;
     public event Action BaseUpgraded;
 
+    [Inject]
+    private void Cunstruct(PlanetServicesProvider planetServices)
+    {
+        _upgradeSystem = planetServices.UpgradeSystem;
+        _basePointerView = planetServices.BasePointerView;
+        _baseUpgrader = planetServices.BaseUpgrader;
+    }
+
     private void Awake()
     {
         _resourceHandler = GetComponentInChildren<CatchedResourceHandler>();
-        _resourcesView = GetComponentInChildren<PlayerResourcesVisabiltyView>();
+        _resourcesView = GetComponentInChildren<PlayerResourcesView>();
         _collisionHandler = GetComponent<PlayerCollisionHandler>();
         _goldHandler = GetComponent<PlayerGoldHandler>();
         _goldView = GetComponentInChildren<PlayerGoldView>();

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 public class WeaponUpgrader : MonoBehaviour
 {
@@ -8,23 +9,30 @@ public class WeaponUpgrader : MonoBehaviour
     private const string WeaponLastUpgradeMessage = "Weapon upgraded, you can now collect Alien Artifact";
     private const string WeaponFullyUpgradedMessage = "Weapon is fully upgraded";
 
-    [SerializeField] private UIPopUpWindowShower _windowShower;
-
     private const int WeaponStartLevel = 1;
     private const int WeaponSecondLevel = 2;
     private const int WeaponThirdLevel = 3;
     private const int WeaponEndLevel = 4;
 
+    private UIPopUpWindowShower _windowShower;
     private int _currentLevel = 1;
 
     public event Action WeaponUpgraded;
     public event Action WeaponFullyUpgraded;
+    public event Action WeaponSecondLevelUpgraded;
+    public event Action WeaponThirdLevelUpgraded;
 
     public int StartLevel => WeaponStartLevel;
     public int SecondLevel => WeaponSecondLevel;
     public int ThirdLevel => WeaponThirdLevel;
     public int EndLevel => WeaponEndLevel;
     public int CurrentLevel => _currentLevel;
+
+    [Inject]
+    private void Construct(UIServicesProvider UIServices)
+    {
+        _windowShower = UIServices.PopUpWindow;
+    }
 
     private void Start()
     {
@@ -38,24 +46,31 @@ public class WeaponUpgrader : MonoBehaviour
             _currentLevel++;
             WeaponUpgraded?.Invoke();
 
-            switch (_currentLevel)
-            {
-                case WeaponSecondLevel:
-                    _windowShower.AddMessageToQueue(WeaponSecondUpgradeMessage);
-                    break;
-                case WeaponThirdLevel:
-                    _windowShower.AddMessageToQueue(WeaponThirdUpgradeMessage);
-                    break;
-                case WeaponEndLevel:
-                    _windowShower.AddMessageToQueue(WeaponLastUpgradeMessage);
-                    break;
-            }
+            ShowUpgradeMessage();
 
             if (_currentLevel >= WeaponEndLevel)
             {
                 WeaponFullyUpgraded?.Invoke();
                 _windowShower.AddMessageToQueue(WeaponFullyUpgradedMessage);
             }
+        }
+    }
+
+    private void ShowUpgradeMessage()
+    {
+        switch (_currentLevel)
+        {
+            case WeaponSecondLevel:
+                WeaponSecondLevelUpgraded?.Invoke();
+                _windowShower.AddMessageToQueue(WeaponSecondUpgradeMessage);
+                break;
+            case WeaponThirdLevel:
+                WeaponThirdLevelUpgraded?.Invoke();
+                _windowShower.AddMessageToQueue(WeaponThirdUpgradeMessage);
+                break;
+            case WeaponEndLevel:
+                _windowShower.AddMessageToQueue(WeaponLastUpgradeMessage);
+                break;
         }
     }
 }

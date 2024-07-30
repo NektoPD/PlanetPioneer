@@ -29,14 +29,12 @@ public class ResourceSpawner : ObjectPool<Resource>
 
     private void OnEnable()
     {
-        _sellingSystem.GotResource += ReturnResourceToPull;
         ObjectReturnedToPool += Spawn;
 
     }
 
     private void OnDisable()
     {
-        _sellingSystem.GotResource -= ReturnResourceToPull;
         ObjectReturnedToPool -= Spawn;
     }
 
@@ -44,6 +42,9 @@ public class ResourceSpawner : ObjectPool<Resource>
     {
         if (_spawnPoints.Count == 0)
             throw new InvalidOperationException(NoAvailableSpawnPointsErrorMessage);
+
+        if (ActiveObjects.Count >= Capacity)
+            return;
 
         List<SpawnArea> availableSpawnPoints = new List<SpawnArea>(_spawnPoints);
 

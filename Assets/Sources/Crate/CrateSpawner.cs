@@ -21,12 +21,6 @@ public class CrateSpawner : ObjectPool<Crate>
     {
         _baseUpgrader.BaseUpgraded -= SpawnCrate;
     }
-
-    private void Start()
-    {
-        SpawnCrate();
-    }
-
     public void SpawnCrate()
     {
         if(TryGetObject(out Crate crate, _prefab))

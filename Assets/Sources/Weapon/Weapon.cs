@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(WeaponLevelChecker))]
-[RequireComponent(typeof(WeaponView))]
 [RequireComponent(typeof(ResourceCatcher))]
 [RequireComponent(typeof(CatchedResourceHandler))]
 [RequireComponent(typeof(WeaponUpgrader))]
@@ -13,7 +12,6 @@ public class Weapon : MonoBehaviour
     private CatchedResourceHandler _resourceCatcherHandler;
     private WeaponUpgrader _upgrader;
     private IUpgradeSystem _upgradeSystem;
-    private WeaponView _weaponView;
     private WeaponLevelChecker _weaponLevelChecker;
 
     public event Action ShootButtonPressed;
@@ -27,7 +25,6 @@ public class Weapon : MonoBehaviour
         _resourceCatcher = GetComponent<ResourceCatcher>();
         _resourceCatcherHandler = GetComponent<CatchedResourceHandler>();
         _upgrader = GetComponent<WeaponUpgrader>();
-        _weaponView = GetComponent<WeaponView>();
         _weaponLevelChecker = GetComponent<WeaponLevelChecker>();
 
         _playerInput = new PlayerInput();

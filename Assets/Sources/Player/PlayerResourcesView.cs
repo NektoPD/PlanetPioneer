@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class PlayerResourcesVisabiltyView : MonoBehaviour
+public class PlayerResourcesView : MonoBehaviour
 {
     [SerializeField] private TMP_Text _ironAmount;
     [SerializeField] private TMP_Text _crystalAmount;

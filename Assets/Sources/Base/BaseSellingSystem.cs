@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class BaseSellingSystem : MonoBehaviour, IInteractable
 {
@@ -12,7 +13,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     [SerializeField] private Transform _baseStartSellingPoint;
     [SerializeField] private Transform _baseFinishSellingPoint;
     [SerializeField] private float _lerpDuration;
-    [SerializeField] private Player _player; // Zenject?
+    [SerializeField] private Player _player;
 
     private readonly Queue<Resource> _resourceQueue = new Queue<Resource>();
     private bool _isProcessing = false;
@@ -22,10 +23,11 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     private int _alienArtifactValue = 6;
 
     public event Action<int> IndicatedResource;
-    public event Action<Resource> GotResource;
 
-    private void OnEnable()
+    [Inject]
+    private void Construct(Player player)
     {
+        _player = player;
         _player.ResourcesProvidedToBase += EnqueueResources;
     }
 
@@ -38,7 +40,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     {
         if (collider.TryGetComponent<PlayerCollisionHandler>(out PlayerCollisionHandler player))
         {
-            player.ProcessCollision(this); //Заменить на событие?
+            player.ProcessCollision(this);
         }
     }
 
@@ -66,6 +68,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
         {
             Resource resource = _resourceQueue.Dequeue();
 
+            resource.SetInitScale();
             yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(resource.transform, _baseStartSellingPoint.position, _baseFinishSellingPoint.position, _lerpDuration));
             Type resourceType = resource.GetType();
 
@@ -87,12 +90,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
                     IndicatedResource?.Invoke(_alienArtifactValue);
                     _alienArtifactResourceSpawner.ReturnResourceToPull(resource);
                     break;
-                default:
-                    Debug.LogWarning("Unhandled resource type: " + resourceType.Name);
-                    break;
             }
-
-            GotResource?.Invoke(resource);
         }
 
         _isProcessing = false;

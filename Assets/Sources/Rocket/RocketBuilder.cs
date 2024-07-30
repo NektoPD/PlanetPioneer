@@ -5,8 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RocketBuilder : MonoBehaviour
 {
+    private const string RocketIsFullyBuiltMessage = "Rocket is fully built.";
+    private const string NoRocketUpgradesAvailableMessage = "No more parts available to upgrade.";
     private const int MaxParts = 5;
 
+    [SerializeField] private UIPopUpWindowShower _popUpWindowShower;
     [SerializeField] private UpgradeSystem _upgradeSystem;
 
     private RocketPart[] _parts;
@@ -52,7 +55,7 @@ public class RocketBuilder : MonoBehaviour
     {
         if (_isRocketFullyBuilt)
         {
-            Debug.LogWarning("Rocket is already fully built.");
+            _popUpWindowShower.AddMessageToQueue(RocketIsFullyBuiltMessage);
             return;
         }
 
@@ -67,13 +70,13 @@ public class RocketBuilder : MonoBehaviour
             if (_currentBuildParts == MaxParts)
             {
                 _isRocketFullyBuilt = true;
-                Debug.Log("Rocket is fully built.");
+                _popUpWindowShower.AddMessageToQueue(RocketIsFullyBuiltMessage);
                 RocketReady?.Invoke();
             }
         }
         else
         {
-            Debug.LogWarning("No more parts available to upgrade.");
+            _popUpWindowShower.AddMessageToQueue(NoRocketUpgradesAvailableMessage);
         }
     }
 

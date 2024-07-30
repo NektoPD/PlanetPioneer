@@ -14,6 +14,8 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
     public event Action ObjectReturnedToPool;
     
     public Transform PlanetPosition => _planetPosition;
+    public int Capacity => _capacity;
+    public IReadOnlyCollection<T> ActiveObjects => _activeObjects;
 
     protected void Initalize(T prefab)
     {

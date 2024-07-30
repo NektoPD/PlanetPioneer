@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
@@ -11,9 +10,9 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
     private int _startAlienArtifactCapacity = 2;
 
     private int _upgradedMaxIronCapacity = 20;
-    private int _upgradedMaxCrystalCapacity = 15; //Пересмотреть
-    private int _upgradedMaxPlantCapacity = 8; //Пересмотреть
-    private int _upgradedAlienArtifactCapacity = 3; //Пересмотреть
+    private int _upgradedMaxCrystalCapacity = 15;
+    private int _upgradedMaxPlantCapacity = 8;
+    private int _upgradedAlienArtifactCapacity = 3;
 
     private readonly Dictionary<Type, List<Resource>> _resources = new Dictionary<Type, List<Resource>>();
     private Dictionary<Type, int> _maxCapacityConstraints = new Dictionary<Type, int>();
@@ -138,5 +137,3 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
         _playerUpgrader.UpgradedBag -= UpgradeMaxResourceCapacity;
     }
 }
-
-

@@ -1,38 +1,39 @@
 using System;
 using UnityEngine;
+using Zenject;
 
-[RequireComponent(typeof(Collider))]
 public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 {
     private const int UpgradeMultiplier = 2;
     private const string DontHaveEnoughGoldToUpgradeError = "Don't have enough gold to upgrade";
 
     [SerializeField] private UpgradeSystemView _upgradeSystemView;
-    [SerializeField] private Player _player; //Zenject?
     [SerializeField] protected UIPopUpWindowShower _windowShower;
 
+    private Player _player;
+    private WeaponUpgrader _weaponUpgrader;
     private int _baseUpgradeCost = 50;
     private int _weaponUpgradeCost = 50;
     private int _rocketUpgradeCost = 100;
 
     public event Action PlayerSteppedIn;
     public event Action PlayerSteppedOut;
-
     public event Action WeaponUpgraded;
     public event Action BaseUpgraded;
     public event Action RocketUpgraded;
-
     public event Action RocketUpgradesAvailable;
-
     public event Action<int> GoldDeducted;
     public event Action<int> WeaponUpgradeCostChanged;
     public event Action<int> BaseUpgradeCostChanged;
     public event Action<int> RocketUpgradeCostChanged;
 
-    private void Start()
+    [Inject]
+    private void Construct(Player player)
     {
-        WeaponUpgradeCostChanged?.Invoke(_weaponUpgradeCost);
-        BaseUpgradeCostChanged?.Invoke(_baseUpgradeCost);
+        _player = player;
+
+        _weaponUpgrader = player.GetComponentInChildren<WeaponUpgrader>();
+        _upgradeSystemView.SetWeaponUpgrader(_weaponUpgrader);
 
         Weapon weapon = _player.GetComponentInChildren<Weapon>();
 
@@ -42,6 +43,13 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
         weapon.SetUpgradeSystem(this);
     }
 
+    private void Start()
+    {
+        WeaponUpgradeCostChanged?.Invoke(_weaponUpgradeCost);
+        BaseUpgradeCostChanged?.Invoke(_baseUpgradeCost);
+
+    }
+
     private void OnEnable()
     {
         _upgradeSystemView.OnBaseUpgradeButtonClicked += OnBaseUpgradeButtonClicked;
@@ -49,8 +57,6 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
         _upgradeSystemView.OnRocketUpgradeButtonClicked += OnRocketUpgradeButtonClicked;
         _upgradeSystemView.RocketUpgradeButtonEnabled += HandleRocketUpgradesAvailable;
     }
-
-    
 
     private void OnDisable()
     {

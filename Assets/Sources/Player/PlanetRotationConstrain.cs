@@ -1,11 +1,18 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 public class PlanetRotationConstrain : MonoBehaviour
 {
-    [SerializeField] private Transform _planet;
+    private Transform _planet;
 
     private Transform _transformToRotate;
+
+    [Inject]
+    private void Construct(PlanetServicesProvider planetServices)
+    {
+        _planet = planetServices.PlanetPosition;
+    }
 
     private void Awake()
     {
@@ -14,7 +21,10 @@ public class PlanetRotationConstrain : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Quaternion rotation = Quaternion.FromToRotation(-_transformToRotate.up, _planet.position - _transformToRotate.position); 
+        if (_planet == null)
+            return;
+
+        Quaternion rotation = Quaternion.FromToRotation(-_transformToRotate.up, _planet.position - _transformToRotate.position);
         _transformToRotate.rotation = rotation * _transformToRotate.rotation;
     }
 
