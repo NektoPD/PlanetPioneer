@@ -73,4 +73,25 @@ public class WeaponUpgrader : MonoBehaviour
                 break;
         }
     }
+
+    public void SetCurrentLevel(int level)
+    {
+        if (_currentLevel > WeaponEndLevel || _currentLevel < WeaponStartLevel)
+            throw new ArgumentOutOfRangeException(nameof(level));
+
+        for (int i = _currentLevel; i < level; i++)
+        {
+            WeaponUpgraded?.Invoke();
+            ShowUpgradeMessage();
+        }
+
+        if (_currentLevel != level)
+            _currentLevel = level;
+
+
+        if (_currentLevel >= WeaponEndLevel)
+        {
+            WeaponFullyUpgraded?.Invoke();
+        }
+    }
 }

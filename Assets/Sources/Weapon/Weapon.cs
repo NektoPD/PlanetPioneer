@@ -5,14 +5,18 @@ using UnityEngine;
 [RequireComponent(typeof(ResourceCatcher))]
 [RequireComponent(typeof(CatchedResourceHandler))]
 [RequireComponent(typeof(WeaponUpgrader))]
+[RequireComponent(typeof(ParticleSpawner))]
 public class Weapon : MonoBehaviour
 {
+    [SerializeField] private SoundController _weaponSound;
+    
     private PlayerInput _playerInput;
     private ResourceCatcher _resourceCatcher;
     private CatchedResourceHandler _resourceCatcherHandler;
     private WeaponUpgrader _upgrader;
     private IUpgradeSystem _upgradeSystem;
     private WeaponLevelChecker _weaponLevelChecker;
+    private ParticleSpawner _particleSpawner;
 
     public event Action ShootButtonPressed;
     public event Action StartedGatheringResources;
@@ -26,6 +30,7 @@ public class Weapon : MonoBehaviour
         _resourceCatcherHandler = GetComponent<CatchedResourceHandler>();
         _upgrader = GetComponent<WeaponUpgrader>();
         _weaponLevelChecker = GetComponent<WeaponLevelChecker>();
+        _particleSpawner = GetComponent<ParticleSpawner>();
 
         _playerInput = new PlayerInput();
     }
@@ -76,10 +81,14 @@ public class Weapon : MonoBehaviour
     private void ProcessResourceGatherStart()
     {
         StartedGatheringResources?.Invoke();
+        _particleSpawner.ActivateParticle();
+        _weaponSound.PlaySound();
     }
 
     private void ProcessResourceGatherEnd()
     {
         StopedGatheringResources?.Invoke();
+        _particleSpawner.DeactivateParticle();
+        _weaponSound.StopPlayingSound();
     }
 }

@@ -17,18 +17,18 @@ public class LocationInstaller : MonoInstaller
 
     private void BindUIServices()
     {
-        Container.Bind<UIServicesProvider>().FromInstance(_UIServicesProvider).AsSingle().NonLazy();
+        Container.Bind<UIServicesProvider>().FromInstance(_UIServicesProvider).AsSingle();
     }
 
     private void BindPlanetServices()
     {
-        Container.Bind<PlanetServicesProvider>().FromInstance(_planetServicesProvider).AsSingle().NonLazy();
+        Container.Bind<PlanetServicesProvider>().FromInstance(_planetServicesProvider).AsSingle();
     }
 
     private void BindPlayer()
     {
         Player player = Container.InstantiatePrefabForComponent<Player>(_prefab, _startPoint.position, Quaternion.identity, null);
 
-        Container.Bind<Player>().FromInstance(player).AsSingle().NonLazy();
+        Container.Bind<Player>().FromInstance(player).AsSingle();
     }
 }

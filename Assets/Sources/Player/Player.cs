@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     private PlayerMover _mover;
     private Weapon _weapon;
     private ResourceCatcher _resourceCatcher;
+    private Transform _transform;
 
     public int CurrentGoldAmount => _goldHandler.GoldAmount;
 
@@ -28,6 +29,11 @@ public class Player : MonoBehaviour
     public event Action ResourceAddedToBag;
     public event Action ResourceRemovedFromBag;
     public event Action BaseUpgraded;
+
+    public float CurrentXPosition => _transform.position.x;
+    public float CurrentYPosition => _transform.position.y;
+    public float CurrentZPosition => _transform.position.z;
+
 
     [Inject]
     private void Cunstruct(PlanetServicesProvider planetServices)
@@ -48,12 +54,14 @@ public class Player : MonoBehaviour
         _mover = GetComponent<PlayerMover>();
         _weapon = GetComponentInChildren<Weapon>();
         _resourceCatcher = GetComponentInChildren<ResourceCatcher>();
+        _transform = transform;
     }
 
     private void OnEnable()
     {
         _collisionHandler.CollidedWithGold += IncreaseGoldAmount;
         _collisionHandler.CollidedWithTheBase += HandleCollisionWithBase;
+
         _upgradeSystem.GoldDeducted += _goldHandler.DecreaceGoldAmount;
         _upgradeSystem.BaseUpgraded += ProcessPlayerUpgrade;
 
@@ -66,12 +74,14 @@ public class Player : MonoBehaviour
         _resourceHandler.ResourcesCleared += ProcessResourceRemovedFromBag;
 
         _baseUpgrader.BaseUpgraded += ProcessBaseUpgrade;
+        _baseUpgrader.LoadedBaseUpgrades += ProcessBaseUpgrade;
     }
 
     private void OnDisable()
     {
         _collisionHandler.CollidedWithGold -= IncreaseGoldAmount;
         _collisionHandler.CollidedWithTheBase -= HandleCollisionWithBase;
+
         _upgradeSystem.GoldDeducted -= _goldHandler.DecreaceGoldAmount;
         _upgradeSystem.BaseUpgraded -= ProcessPlayerUpgrade;
 
@@ -84,6 +94,7 @@ public class Player : MonoBehaviour
         _resourceHandler.ResourcesCleared -= ProcessResourceRemovedFromBag;
 
         _baseUpgrader.BaseUpgraded -= ProcessBaseUpgrade;
+        _baseUpgrader.LoadedBaseUpgrades -= ProcessBaseUpgrade;
     }
 
     private void Start()
@@ -97,9 +108,14 @@ public class Player : MonoBehaviour
         _mover.SetPlayerUpgrader(_upgrader);
     }
 
+    public void ProcessGoldIncreaseAmount(int amount)
+    {
+        _goldHandler.SetGoldAmount(amount);
+    }
+
     private void IncreaseGoldAmount()
     {
-        _goldHandler.SetGoldAmount();
+        _goldHandler.IncreaseGoldAmount();
     }
 
     private void HandleCollisionWithBase()
@@ -132,5 +148,10 @@ public class Player : MonoBehaviour
     private void ProcessBaseUpgrade()
     {
         BaseUpgraded?.Invoke();
+    }
+
+    public void SetCurrentPosition(Vector3 position)
+    {
+        _transform.position = position;
     }
 }

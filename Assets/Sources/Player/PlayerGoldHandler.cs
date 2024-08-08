@@ -9,7 +9,7 @@ public class PlayerGoldHandler : MonoBehaviour
 
     private UIPopUpWindowShower _windowShower;
 
-    private int _goldMultiplier = 1;
+    private int _goldMultiplier = 10;
     private int _goldAmount = 0;
     private int _goldMaxAmount = 9999;
 
@@ -23,7 +23,7 @@ public class PlayerGoldHandler : MonoBehaviour
         _windowShower = UIServices.PopUpWindow;
     }
 
-    public void SetGoldAmount()
+    public void IncreaseGoldAmount()
     {
         if (_goldAmount >= _goldMaxAmount)
         {
@@ -48,5 +48,13 @@ public class PlayerGoldHandler : MonoBehaviour
 
         _goldAmount -= amount;
         GoldAmountChanged?.Invoke(_goldAmount);
+    }
+
+    public void SetGoldAmount(int amount)
+    {
+        if (amount < 0 || amount > _goldMaxAmount)
+            throw new ArgumentOutOfRangeException(nameof(amount));
+
+        _goldAmount = amount;
     }
 }

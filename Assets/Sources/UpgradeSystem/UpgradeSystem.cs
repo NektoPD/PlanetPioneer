@@ -9,6 +9,8 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
     [SerializeField] private UpgradeSystemView _upgradeSystemView;
     [SerializeField] protected UIPopUpWindowShower _windowShower;
+    [SerializeField] private SoundController _upgradeSound;
+    [SerializeField] private SoundController _errorSound;
 
     private Player _player;
     private WeaponUpgrader _weaponUpgrader;
@@ -39,7 +41,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
         if (weapon == null)
             throw new ArgumentNullException(nameof(weapon));
-            
+
         weapon.SetUpgradeSystem(this);
     }
 
@@ -47,7 +49,6 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     {
         WeaponUpgradeCostChanged?.Invoke(_weaponUpgradeCost);
         BaseUpgradeCostChanged?.Invoke(_baseUpgradeCost);
-
     }
 
     private void OnEnable()
@@ -113,10 +114,12 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
             GoldDeducted?.Invoke(upgradeCost);
             upgradeCost = IncreaseUpgradeCost(upgradeCost);
             upgradeCostChangedEvent?.Invoke(upgradeCost);
+            _upgradeSound.PlaySound();
         }
         else
         {
-            _windowShower.AddMessageToQueue(DontHaveEnoughGoldToUpgradeError); 
+            _windowShower.AddMessageToQueue(DontHaveEnoughGoldToUpgradeError);
+            _errorSound.PlaySound();
         }
     }
 
