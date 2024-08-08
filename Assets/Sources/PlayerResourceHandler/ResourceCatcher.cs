@@ -21,7 +21,7 @@ public class ResourceCatcher : MonoBehaviour
     private UISliderShower _sliderShower;
     private UIPopUpWindowShower _popUpWindowShower;
     private Weapon _weapon;
-    private ICapacityChecker _capacityChecker;
+    private ICapacityHandler _capacityHandler;
     private Coroutine _gatheringCoroutine;
     private PlayerUpgrader _playerUpgrader;
 
@@ -53,12 +53,12 @@ public class ResourceCatcher : MonoBehaviour
         _weapon.ShootButtonPressed += Shoot;
     }
 
-    public void SetCapacityChecker(ICapacityChecker checker)
+    public void SetCapacityChecker(ICapacityHandler handler)
     {
-        if (checker == null)
-            throw new ArgumentNullException(nameof(checker));
+        if (handler == null)
+            throw new ArgumentNullException(nameof(handler));
 
-        _capacityChecker = checker;
+        _capacityHandler = handler;
     }
 
     private void Shoot()
@@ -82,7 +82,7 @@ public class ResourceCatcher : MonoBehaviour
                 return;
             }
 
-            if (_capacityChecker.IsMaxCapacityReached(resourceType))
+            if (_capacityHandler.IsMaxCapacityReached(resourceType))
             {
                 _popUpWindowShower.AddMessageToQueue($"Cannot catch more {resourceType.Name}. Maximum capacity reached.");
                 _errorSound.PlaySound();

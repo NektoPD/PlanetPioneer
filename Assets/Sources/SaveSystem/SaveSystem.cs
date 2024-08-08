@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public class SaveSystem : MonoBehaviour
+public class SaveSystem : ISaveSystem
 {
     [SerializeField] private BaseUpgrader _baseUpgrader;
     [SerializeField] private RocketBuilder _rocketBuilder;

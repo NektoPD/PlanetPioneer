@@ -65,8 +65,6 @@ public class Player : MonoBehaviour
         _upgradeSystem.GoldDeducted += _goldHandler.DecreaceGoldAmount;
         _upgradeSystem.BaseUpgraded += ProcessPlayerUpgrade;
 
-        _upgrader.UpgradedBag += ProcessMaxResourceBagUpgrade;
-
         _weapon.StartedGatheringResources += _mover.DisableMovement;
         _weapon.StopedGatheringResources += _mover.EnableMovement;
 
@@ -84,9 +82,7 @@ public class Player : MonoBehaviour
 
         _upgradeSystem.GoldDeducted -= _goldHandler.DecreaceGoldAmount;
         _upgradeSystem.BaseUpgraded -= ProcessPlayerUpgrade;
-
-        _upgrader.UpgradedBag -= ProcessMaxResourceBagUpgrade;
-
+        
         _weapon.StartedGatheringResources -= _mover.DisableMovement;
         _weapon.StopedGatheringResources -= _mover.EnableMovement;
 
@@ -122,17 +118,11 @@ public class Player : MonoBehaviour
     {
         Dictionary<Type, List<Resource>> resources = _resourceHandler.GetAllResources();
         ResourcesProvidedToBase?.Invoke(resources);
-        _resourceHandler.ClearAllResources();
     }
 
     private void ProcessPlayerUpgrade()
     {
         _upgrader.ProcessUpgrade();
-    }
-
-    private void ProcessMaxResourceBagUpgrade()
-    {
-        _resourceHandler.UpgradeMaxResourceCapacity();
     }
 
     private void ProcessResourceAddedToBag()

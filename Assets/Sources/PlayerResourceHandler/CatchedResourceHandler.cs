@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject.ReflectionBaking.Mono.Cecil;
 
-public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
+public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler
 {
     private int _startIronCapacity = 15;
     private int _startCrystalCapacity = 10;
@@ -80,10 +80,12 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
 
     public Dictionary<Type, List<Resource>> GetAllResources()
     {
-        return new Dictionary<Type, List<Resource>>(_resources);
+        var dictionaryToReturn = new Dictionary<Type, List<Resource>>(_resources);
+        ClearAllResources();
+        return dictionaryToReturn;
     }
 
-    public void ClearAllResources()
+    private void ClearAllResources()
     {
         foreach (var resourceType in _resources.Keys)
         {
@@ -103,7 +105,7 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityChecker
         _weapon.ResourceCatcher.CatchedResource += AddResource;
     }
 
-    public void UpgradeMaxResourceCapacity()
+    private void UpgradeMaxResourceCapacity()
     {
         _maxCapacityConstraints[typeof(Iron)] = _upgradedMaxIronCapacity;
         _maxCapacityConstraints[typeof(Crystal)] = _upgradedMaxCrystalCapacity;
