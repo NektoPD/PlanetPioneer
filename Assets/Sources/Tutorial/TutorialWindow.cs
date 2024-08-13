@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -6,12 +7,28 @@ public class TutorialWindow : MonoBehaviour
     [SerializeField] private TMP_Text _skipTutorialText;
     [SerializeField] private TMP_Text _startNextTutorialText;
 
-    private UITutorailText[] _textBoxes;
+    private UITutorialText[] _textBoxes;
     private int _currentTutorialWindow;
+    private PlayerInput _playerInput;
+
+    public event Action TutorialViewed;
 
     private void Awake()
     {
         InitializeComponents();
+        _playerInput = new PlayerInput();
+    }
+
+    private void OnEnable()
+    {
+        _playerInput.Enable();
+        _playerInput.Player.Skip.performed += ctx => OnSkipButtonPressed();
+    }
+
+    private void OnDisable()
+    {
+        _playerInput.Disable();
+        _playerInput.Player.Skip.performed -= ctx => OnSkipButtonPressed();
     }
 
     private void Start()
@@ -36,7 +53,7 @@ public class TutorialWindow : MonoBehaviour
 
     private void InitializeComponents()
     {
-        _textBoxes = GetComponentsInChildren<UITutorailText>();
+        _textBoxes = GetComponentsInChildren<UITutorialText>();
         _currentTutorialWindow = 0;
     }
 
@@ -53,6 +70,7 @@ public class TutorialWindow : MonoBehaviour
         if (_textBoxes.Length > 0)
         {
             _textBoxes[_currentTutorialWindow].gameObject.SetActive(true);
+            _textBoxes[_currentTutorialWindow].StartDisplayText();
         }
     }
 
@@ -65,11 +83,14 @@ public class TutorialWindow : MonoBehaviour
     {
         _skipTutorialText.enabled = false;
         _startNextTutorialText.enabled = true;
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ProceedToNextTutorialWindow();
-        }
+    private void OnSkipButtonPressed()
+    {
+        if (_textBoxes[_currentTutorialWindow].DisplayedAllText() == false)
+            return;
+        
+        ProceedToNextTutorialWindow();
     }
 
     private void ProceedToNextTutorialWindow()
@@ -79,6 +100,7 @@ public class TutorialWindow : MonoBehaviour
 
         if (_currentTutorialWindow >= _textBoxes.Length)
         {
+            TutorialViewed?.Invoke();
             gameObject.SetActive(false);
         }
         else

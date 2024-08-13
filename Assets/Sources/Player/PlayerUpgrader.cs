@@ -2,17 +2,16 @@ using System;
 using UnityEngine;
 using Zenject;
 
-public class PlayerUpgrader : MonoBehaviour
+public class PlayerUpgrader : MonoBehaviour, IPlayerUpgrader
 {
     private const string PlayerBagUpgradedMessage = "Players bag is now upgraded";
     private const string PlayerGatherSpeedUpgradedMessage = "Player gather speed is now upgraded";
     private const string PlayerMovingSpeedUpgradedMessage = "Player moving speed is now upgraded";
     private const string PlayerGatherRadiusUpgradedMessage = "Player gather speed in now upgraded";
 
+    private BaseUpgrader _baseUpgrader;
     private UIPopUpWindowShower _windowShower;
-    private Player _player;
     private const int MaxPossibleUpgrades = 4;
-
     private int _currentUpgradeLevel = 0;
 
     public event Action UpgradedBag;
@@ -21,9 +20,18 @@ public class PlayerUpgrader : MonoBehaviour
     public event Action UpgradedGatherRadius;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices)
+    private void Construct(UIServicesProvider UIServices, PlanetServicesProvider planetServices)
     {
         _windowShower = UIServices.PopUpWindow;
+        _baseUpgrader = planetServices.BaseUpgrader;
+        _baseUpgrader.BaseUpgraded += ProcessUpgrade;
+        _baseUpgrader.LoadedBaseUpgrades += ProcessUpgrade;
+    }
+
+    private void OnDisable()
+    {
+        _baseUpgrader.BaseUpgraded -= ProcessUpgrade;
+        _baseUpgrader.LoadedBaseUpgrades -= ProcessUpgrade;
     }
 
     public void ProcessUpgrade()
@@ -56,19 +64,5 @@ public class PlayerUpgrader : MonoBehaviour
                 UpgradedGatherRadius?.Invoke();
                 break;
         }
-    }
-
-    public void SetPlayer(Player player)
-    {
-        if(player == null)
-            throw new ArgumentNullException(nameof(player));
-
-        _player = player;
-        _player.BaseUpgraded += ProcessUpgrade;
-    }
-
-    private void OnDisable()
-    {
-        _player.BaseUpgraded -= ProcessUpgrade;
     }
 }

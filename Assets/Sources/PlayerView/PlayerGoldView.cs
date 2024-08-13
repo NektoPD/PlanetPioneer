@@ -6,14 +6,14 @@ public class PlayerGoldView : MonoBehaviour
 {
     [SerializeField] private TMP_Text _goldAmount;
 
-    private PlayerGoldHandler _handler;
+    private IGoldHandler _handler;
 
     private void SetAmount(int amount)
     {
         _goldAmount.text = amount.ToString();
     }
 
-    public void SetGoldHandler(PlayerGoldHandler goldHandler)
+    public void SetGoldHandler(IGoldHandler goldHandler)
     {
         if (goldHandler == null)
             throw new ArgumentNullException();

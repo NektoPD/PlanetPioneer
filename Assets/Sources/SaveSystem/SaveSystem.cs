@@ -7,15 +7,6 @@ using Zenject;
 
 public class SaveSystem : ISaveSystem
 {
-    [SerializeField] private BaseUpgrader _baseUpgrader;
-    [SerializeField] private RocketBuilder _rocketBuilder;
-    [SerializeField] private ResourceSpawner _ironSpawner;
-
-    private WeaponUpgrader _weaponUpgrader;
-    private CatchedResourceHandler _catchedResourceHandler;
-    private Player _player;
-    private string _filePath;
-
     private const string WeaponLevelKey = "WeaponLevel";
     private const string BaseUpgradesLeftKey = "BaseLevel";
     private const string RocketLevelKey = "RocketLevel";
@@ -24,16 +15,22 @@ public class SaveSystem : ISaveSystem
     private const string PlayerYPositionKey = "YPosition";
     private const string PlayerZPositionKey = "ZPosition";
 
+    private BaseUpgrader _baseUpgrader;
+    private RocketBuilder _rocketBuilder;
+    private IWeaponUpgrader _weaponUpgrader;
+    private IResourceHandler _catchedResourceHandler;
+    private Player _player;
+    private string _filePath;
+    
     [Inject]
-    private void Construct(Player player)
+    private void Construct(Player player, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader,
+        PlanetServicesProvider planetServicesProvider)
     {
         _player = player;
-        _weaponUpgrader = player.GetComponentInChildren<WeaponUpgrader>();
-        _catchedResourceHandler = player.GetComponentInChildren<CatchedResourceHandler>();
-    }
-
-    private void Awake()
-    {
+        _weaponUpgrader = weaponUpgrader;
+        _catchedResourceHandler = resourceHandler;
+        _baseUpgrader = planetServicesProvider.BaseUpgrader;
+        _rocketBuilder = planetServicesProvider.RocketBuilder;
         _filePath = Application.persistentDataPath + "/Save.json";
     }
 
@@ -42,7 +39,7 @@ public class SaveSystem : ISaveSystem
         LoadPlayerPrefs();
         LoadResourcesFromJson();
     }
-    
+
     public void SaveProgress()
     {
         SavePlayerPrefs();
@@ -98,7 +95,7 @@ public class SaveSystem : ISaveSystem
                     resources.Add(resource);
                 }
             }
-
+            
             _catchedResourceHandler.SetResourceAmount(resources.SelectMany(r => r.Resources).ToList());
         }
         catch (Exception ex)
@@ -106,7 +103,7 @@ public class SaveSystem : ISaveSystem
             throw new InvalidOperationException(nameof(ex));
         }
     }
-    
+
     private void LoadPlayerPrefs()
     {
         LoadWeaponUpgrade();
@@ -115,7 +112,7 @@ public class SaveSystem : ISaveSystem
         LoadGoldAmount();
         LoadPlayerPosition();
     }
-    
+
     private void LoadPlayerPosition()
     {
         if (PlayerPrefs.HasKey(PlayerXPositionKey) && PlayerPrefs.HasKey(PlayerYPositionKey) &&

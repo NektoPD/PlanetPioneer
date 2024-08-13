@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(ParticleSpawner))]
 public class Gold : MonoBehaviour, IInteractable
 {
-    [SerializeField] private SoundController _obtainedSound;
+    [SerializeField] private SoundPlayer _obtainedSound;
 
     private ParticleSpawner _particleSpawner;
     private Transform _transform;

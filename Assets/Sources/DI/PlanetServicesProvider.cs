@@ -7,10 +7,10 @@ public class PlanetServicesProvider : MonoInstaller
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private PlayerToBasePointerView _basePointerView;
     [SerializeField] private BaseUpgrader _baseUpgrader;
+    [SerializeField] private RocketBuilder _rocketBuilder;
 
     public Transform PlanetPosition => _planetPosition;
     public UpgradeSystem UpgradeSystem => _upgradeSystem;
-    public PlayerToBasePointerView BasePointerView => _basePointerView;
     public BaseUpgrader BaseUpgrader => _baseUpgrader;
-
+    public RocketBuilder RocketBuilder => _rocketBuilder;
 }

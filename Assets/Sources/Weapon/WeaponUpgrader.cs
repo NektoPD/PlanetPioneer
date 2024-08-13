@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Zenject;
 
-public class WeaponUpgrader : MonoBehaviour
+public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
 {
     private const string WeaponSecondUpgradeMessage = "Weapon upgraded, you can now collect Crystals";
     private const string WeaponThirdUpgradeMessage = "Weapon upgraded, you can now collect Plant";
@@ -39,7 +39,7 @@ public class WeaponUpgrader : MonoBehaviour
         _currentLevel = WeaponStartLevel;
     }
 
-    public void UpgradeWeapon()
+    public void UpgradeWeapon() //Передать через zenject upgradesystem и weaponupgrader сам будет подписываться на событие?
     {
         if (_currentLevel < WeaponEndLevel)
         {

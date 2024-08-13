@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-[RequireComponent(typeof(ParticleSpawner))]
+[RequireComponent(typeof(ParticleSpawner))]    
 public class BaseSellingSystem : MonoBehaviour, IInteractable
 {
     [SerializeField] private ResourceSpawner _ironResourceSpawner;
@@ -14,9 +14,9 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     [SerializeField] private Transform _baseStartSellingPoint;
     [SerializeField] private Transform _baseFinishSellingPoint;
     [SerializeField] private float _lerpDuration;
-    [SerializeField] private ParticleSpawner _particleSystem;
-    [SerializeField] private SoundController _resourceGatherSound;
+    [SerializeField] private SoundPlayer _resourceGatherSound;
 
+    private ParticleSpawner _particleSystem;
     private Player _player;
     private readonly Queue<Resource> _resourceQueue = new Queue<Resource>();
     private bool _isProcessing = false;
@@ -32,6 +32,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     {
         _player = player;
         _player.ResourcesProvidedToBase += EnqueueResources;
+        _particleSystem = GetComponent<ParticleSpawner>();
         _player.ResourceAddedToBag += _particleSystem.ActivateParticle;
     }
 

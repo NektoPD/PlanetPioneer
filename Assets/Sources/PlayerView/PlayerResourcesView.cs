@@ -15,13 +15,14 @@ public class PlayerResourcesView : MonoBehaviour
     [SerializeField] private TMP_Text _maxPlantAmount;
     [SerializeField] private TMP_Text _maxAlienArtifacrtAmount;
 
-    private CatchedResourceHandler _resourceHandler;
-    private Dictionary<Type, TMP_Text> _resourceTextFields;
-    private Dictionary<Type, TMP_Text> _maxResourceTextFields;
+    private IResourceHandler _resourceHandler;
+    private ICapacityHandler _capacityHandler;
+    private Dictionary<Type, TMP_Text> _resourceAmountsTextFields;
+    private Dictionary<Type, TMP_Text> _maxResourceAmountsTextFields;
 
     private void Awake()
     {
-        _resourceTextFields = new Dictionary<Type, TMP_Text>
+        _resourceAmountsTextFields = new Dictionary<Type, TMP_Text>
         {
             { typeof(Iron), _ironAmount },
             { typeof(Crystal), _crystalAmount },
@@ -29,13 +30,38 @@ public class PlayerResourcesView : MonoBehaviour
             { typeof(AlienArtifact), _alienArtifactAmount }
         };
 
-        _maxResourceTextFields = new Dictionary<Type, TMP_Text>
+        _maxResourceAmountsTextFields = new Dictionary<Type, TMP_Text>
         {
-            {typeof(Iron), _maxIronAmount },
+            { typeof(Iron), _maxIronAmount },
             { typeof(Crystal), _maxCrystalsAmount },
             { typeof(Plant), _maxPlantAmount },
             { typeof(AlienArtifact), _maxAlienArtifacrtAmount }
         };
+    }
+    
+    public void SetResourceHandler(IResourceHandler resourceHandler)
+    {
+        if (resourceHandler == null)
+            throw new ArgumentNullException(nameof(resourceHandler));
+
+        _resourceHandler = resourceHandler;
+
+        _resourceHandler.IronAmountChanged += amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Iron), amount);
+        _resourceHandler.CrystalAmountChanged +=
+            amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Crystal), amount);
+        _resourceHandler.PlantAmountChanged += amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Plant), amount);
+        _resourceHandler.AlienArtifactAmountChanged +=
+            amount => SetResourceAmount(_resourceAmountsTextFields, typeof(AlienArtifact), amount);
+    }
+
+    public void SetCapacityHandler(ICapacityHandler capacityHandler)
+    {
+        if (_resourceHandler == null)
+            throw new ArgumentNullException(nameof(capacityHandler));
+
+        _capacityHandler = capacityHandler;
+        _capacityHandler.MaxCapacityUpdated += UpdateMaxResourceAmount;
+        UpdateMaxResourceAmount();
     }
 
     private void SetResourceAmount(Dictionary<Type, TMP_Text> dictionary, Type resourceType, int amount)
@@ -45,40 +71,23 @@ public class PlayerResourcesView : MonoBehaviour
             dictionary[resourceType].text = amount.ToString();
         }
     }
-
-    public void SetResourceHandler(CatchedResourceHandler resourceHandler)
-    {
-        if (resourceHandler == null)
-            throw new ArgumentNullException();
-
-        _resourceHandler = resourceHandler;
-
-        _resourceHandler.IronAmountChanged += amount => SetResourceAmount(_resourceTextFields,typeof(Iron), amount);
-        _resourceHandler.CrystalAmountChanged += amount => SetResourceAmount(_resourceTextFields, typeof(Crystal), amount);
-        _resourceHandler.PlantAmountChanged += amount => SetResourceAmount(_resourceTextFields, typeof(Plant), amount);
-        _resourceHandler.AlienArtifactAmountChanged += amount => SetResourceAmount(_resourceTextFields, typeof(AlienArtifact), amount);
-        _resourceHandler.MaxCapacityUpgraded += UpdateMaxResourceAmount;
-        
-        UpdateMaxResourceAmount();
-    }
-
+    
     private void OnDisable()
     {
-        if (_resourceHandler != null)
-        {
-            _resourceHandler.IronAmountChanged -= amount => SetResourceAmount(_resourceTextFields, typeof(Iron), amount);
-            _resourceHandler.CrystalAmountChanged -= amount => SetResourceAmount(_resourceTextFields,typeof(Crystal), amount);
-            _resourceHandler.PlantAmountChanged -= amount => SetResourceAmount(_resourceTextFields, typeof(Plant), amount);
-            _resourceHandler.AlienArtifactAmountChanged -= amount => SetResourceAmount(_resourceTextFields, typeof(AlienArtifact), amount);
-            _resourceHandler.MaxCapacityUpgraded -= UpdateMaxResourceAmount;
-        }
+        _resourceHandler.IronAmountChanged -= amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Iron), amount);
+        _resourceHandler.CrystalAmountChanged -=
+            amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Crystal), amount);
+        _resourceHandler.PlantAmountChanged -= amount => SetResourceAmount(_resourceAmountsTextFields, typeof(Plant), amount);
+        _resourceHandler.AlienArtifactAmountChanged -=
+            amount => SetResourceAmount(_resourceAmountsTextFields, typeof(AlienArtifact), amount);
+        _capacityHandler.MaxCapacityUpdated -= UpdateMaxResourceAmount;
     }
 
     private void UpdateMaxResourceAmount()
     {
-        foreach (var field in _maxResourceTextFields)
+        foreach (var field in _maxResourceAmountsTextFields)
         {
-            if (_resourceHandler.MaxCapacityConstaints.TryGetValue(field.Key, out var maxAmount))
+            if (_capacityHandler.MaxCapacityConstaints.TryGetValue(field.Key, out var maxAmount))
             {
                 field.Value.text = maxAmount.ToString();
             }

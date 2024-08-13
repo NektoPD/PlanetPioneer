@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Zenject;
 
-public class PlayerGoldHandler : MonoBehaviour
+public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 {
     private const string MaximumGoldAmounReachedErrorMessage = "Maximum gold amount reached";
     private const string NotEnoughGoldToDecreaseErrorrMessage = "Not enough gold to decrease by the specified amount";
@@ -13,9 +13,10 @@ public class PlayerGoldHandler : MonoBehaviour
     private int _goldAmount = 0;
     private int _goldMaxAmount = 9999;
 
-    public int GoldAmount => _goldAmount;
-
+    public event Action GoldReceived;
     public event Action<int> GoldAmountChanged;
+    
+    public int GoldAmount => _goldAmount;
 
     [Inject]
     private void Construct(UIServicesProvider UIServices)
@@ -32,6 +33,7 @@ public class PlayerGoldHandler : MonoBehaviour
         }
 
         _goldAmount += _goldMultiplier;
+        GoldReceived?.Invoke();
         GoldAmountChanged?.Invoke(_goldAmount);
     }
 

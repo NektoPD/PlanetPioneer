@@ -8,7 +8,7 @@ public class CrateSpawner : ObjectPool<Crate>
     [SerializeField] private Transform _spawnPointPosition;
     [SerializeField] private BaseUpgrader _baseUpgrader;
     [SerializeField] private UIPopUpWindowShower _windowShower;
-    [SerializeField] private SoundController _crateSpawnSound;
+    [SerializeField] private SoundPlayer _crateSpawnSound;
 
     private ParticleSpawner _particleSpawner;
 

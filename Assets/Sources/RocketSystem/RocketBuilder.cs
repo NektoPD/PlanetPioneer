@@ -11,7 +11,7 @@ public class RocketBuilder : MonoBehaviour
 
     [SerializeField] private UIPopUpWindowShower _popUpWindowShower;
     [SerializeField] private UpgradeSystem _upgradeSystem;
-    [SerializeField] private SoundController _rocketBuidSound;
+    [SerializeField] private SoundPlayer _rocketBuidSound;
 
     private RocketPart[] _parts;
     private int _currentBuildParts = 0;

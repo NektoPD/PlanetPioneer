@@ -18,7 +18,8 @@ public class PlayerMover : MonoBehaviour
     private Vector2 _inputVector;
     private PlayerAnimator _animator;
     private Transform _transform;
-    private PlayerUpgrader _playerUpgrader;
+    private IPlayerUpgrader _playerUpgrader;
+    private IResourceGatherer _resourceGatherer;
 
     private void Awake()
     {
@@ -45,15 +46,43 @@ public class PlayerMover : MonoBehaviour
     {
         DisableMovement();
 
-        if (_playerUpgrader != null)
-        {
-            _playerUpgrader.UpgradedPlayerMovingSpeed -= UpgradeMovementSpeed;
-        }
+        _playerUpgrader.UpgradedPlayerMovingSpeed -= UpgradeMovementSpeed;
+        _resourceGatherer.StartedGatheringResources -= DisableMovement;
+        _resourceGatherer.StopedGatheringResources -= EnableMovement;
     }
 
     private void Update()
     {
         HandleMovement();
+    }
+
+    public void EnableMovement()
+    {
+        _playerInput.Enable();
+    }
+
+    public void DisableMovement()
+    {
+        _playerInput.Disable();
+    }
+
+    public void SetPlayerUpgrader(IPlayerUpgrader upgrader)
+    {
+        if (upgrader == null)
+            throw new ArgumentNullException(nameof(upgrader));
+
+        _playerUpgrader = upgrader;
+        _playerUpgrader.UpgradedPlayerMovingSpeed += UpgradeMovementSpeed;
+    }
+
+    public void SetResourceGatherer(IResourceGatherer resourceGatherer)
+    {
+        if (resourceGatherer == null)
+            throw new ArgumentNullException(nameof(resourceGatherer));
+
+        _resourceGatherer = resourceGatherer;
+        _resourceGatherer.StartedGatheringResources += DisableMovement;
+        _resourceGatherer.StopedGatheringResources += EnableMovement;
     }
 
     private void HandleMovement()
@@ -92,24 +121,5 @@ public class PlayerMover : MonoBehaviour
     private void UpgradeMovementSpeed()
     {
         _speed = UpgradedMovementSpeed;
-    }
-
-    public void EnableMovement()
-    {
-        _playerInput.Enable();
-    }
-
-    public void DisableMovement()
-    {
-        _playerInput.Disable();
-    }
-
-    public void SetPlayerUpgrader(PlayerUpgrader upgrader)
-    {
-        if (upgrader == null)
-            throw new ArgumentNullException(nameof(upgrader));
-
-        _playerUpgrader = upgrader;
-        _playerUpgrader.UpgradedPlayerMovingSpeed += UpgradeMovementSpeed;
     }
 }

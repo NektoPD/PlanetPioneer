@@ -9,8 +9,8 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
     [SerializeField] private UpgradeSystemView _upgradeSystemView;
     [SerializeField] protected UIPopUpWindowShower _windowShower;
-    [SerializeField] private SoundController _upgradeSound;
-    [SerializeField] private SoundController _errorSound;
+    [SerializeField] private SoundPlayer _upgradeSound;
+    [SerializeField] private SoundPlayer _errorSound;
 
     private Player _player;
     private WeaponUpgrader _weaponUpgrader;
@@ -105,9 +105,6 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
     private void ProcessUpgrade(ref int upgradeCost, Action upgradeAction, Action<int> upgradeCostChangedEvent)
     {
-        if (_player == null)
-            throw new InvalidOperationException(nameof(Player));
-
         if (_player.CurrentGoldAmount >= upgradeCost)
         {
             upgradeAction?.Invoke();

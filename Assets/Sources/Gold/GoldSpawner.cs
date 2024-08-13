@@ -30,6 +30,17 @@ public class GoldSpawner : ObjectPool<Gold>
     {
         _sellingSystem.IndicatedResource -= StartSpawning;
     }
+    
+    public Gold GetGold()
+    {
+        if (TryGetObject(out Gold gold, _prefab))
+        {
+            gold.IsObtained += PutObject;
+            return gold;
+        }
+
+        return null;
+    }
 
     private IEnumerator SpawnGold(int spawnCount)
     {
@@ -49,8 +60,7 @@ public class GoldSpawner : ObjectPool<Gold>
 
         _isSpawning = false;
     }
-
-
+    
     private void StartSpawning(int spawnCount)
     {
         if (!_isSpawning)
@@ -73,16 +83,5 @@ public class GoldSpawner : ObjectPool<Gold>
     {
         gold.IsObtained -= ReturnToPull;
         PutObject(gold);
-    }
-
-    public Gold GetGold()
-    {
-        if (TryGetObject(out Gold gold, _prefab))
-        {
-            gold.IsObtained += PutObject;
-            return gold;
-        }
-
-        return null;
     }
 }

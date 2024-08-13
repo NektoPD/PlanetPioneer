@@ -10,9 +10,15 @@ public class LocationInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+        BindSaveSystem();
         BindUIServices();
         BindPlanetServices();
         BindPlayer();
+    }
+
+    private void BindSaveSystem()
+    {
+        Container.Bind<ISaveSystem>().To<SaveSystem>().FromNew().AsSingle();
     }
 
     private void BindUIServices()
@@ -30,5 +36,10 @@ public class LocationInstaller : MonoInstaller
         Player player = Container.InstantiatePrefabForComponent<Player>(_prefab, _startPoint.position, Quaternion.identity, null);
 
         Container.Bind<Player>().FromInstance(player).AsSingle();
+        Container.Bind<IWeaponUpgrader>().FromInstance(player.GetComponentInChildren<WeaponUpgrader>()).AsSingle();
+        Container.Bind<IResourceHandler>().FromInstance(player.GetComponentInChildren<CatchedResourceHandler>())
+            .AsSingle();
+        Container.Bind<IGoldHandler>().FromInstance(player.GetComponentInChildren<PlayerGoldHandler>()).AsSingle();
+        Container.Bind<IResourceCatcher>().FromInstance(player.GetComponentInChildren<ResourceCatcher>()).AsSingle();
     }
 }

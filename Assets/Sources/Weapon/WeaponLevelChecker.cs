@@ -1,35 +1,35 @@
 using System;
 using UnityEngine;
 
-public class WeaponLevelChecker : MonoBehaviour
+public class WeaponLevelChecker : MonoBehaviour,IWeaponLevelChecker
 {
-    private WeaponUpgrader _upgrader;
+    private IWeaponUpgrader _weaponUpgrader;
 
     public bool IsWeaponLevelSufficient(Resource resource)
     {
         switch (resource)
         {
             case Iron:
-                return _upgrader.CurrentLevel >= _upgrader.StartLevel;
+                return _weaponUpgrader.CurrentLevel >= _weaponUpgrader.StartLevel;
 
             case Crystal:
-                return _upgrader.CurrentLevel >= _upgrader.SecondLevel;
+                return _weaponUpgrader.CurrentLevel >= _weaponUpgrader.SecondLevel;
 
             case Plant:
-                return _upgrader.CurrentLevel >= _upgrader.ThirdLevel;
+                return _weaponUpgrader.CurrentLevel >= _weaponUpgrader.ThirdLevel;
 
             case AlienArtifact:
-                return _upgrader.CurrentLevel >= _upgrader.EndLevel;
+                return _weaponUpgrader.CurrentLevel >= _weaponUpgrader.EndLevel;
         }
 
         return true;
     }
 
-    public void SetWeaponUpgrader(WeaponUpgrader upgrader)
+    public void SetWeaponUpgrader(IWeaponUpgrader weaponUpgrader)
     {
-        if(upgrader == null)
-            throw new ArgumentNullException(nameof(upgrader));
+        if(weaponUpgrader == null)
+            throw new ArgumentNullException(nameof(weaponUpgrader));
 
-        _upgrader = upgrader;
+        _weaponUpgrader = weaponUpgrader;
     }
 }

@@ -6,10 +6,12 @@ using UnityEngine;
 [RequireComponent(typeof(CatchedResourceHandler))]
 [RequireComponent(typeof(WeaponUpgrader))]
 [RequireComponent(typeof(ParticleSpawner))]
-public class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
 {
-    [SerializeField] private SoundController _weaponSound;
-    
+    [SerializeField] private SoundPlayer _weaponSound;
+    [SerializeField] private PlayerUpgrader _playerUpgrader;
+    [SerializeField] private PlayerResourcesView _resourceView;
+
     private PlayerInput _playerInput;
     private ResourceCatcher _resourceCatcher;
     private CatchedResourceHandler _resourceCatcherHandler;
@@ -21,8 +23,6 @@ public class Weapon : MonoBehaviour
     public event Action ShootButtonPressed;
     public event Action StartedGatheringResources;
     public event Action StopedGatheringResources;
-
-    public ResourceCatcher ResourceCatcher => _resourceCatcher;
 
     private void Awake()
     {
@@ -45,12 +45,17 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
-        _resourceCatcher.SetWeapon(this);
+        _resourceCatcher.SetShooter(this);
         _resourceCatcher.SetCapacityChecker(_resourceCatcherHandler);
-        _resourceCatcherHandler.SetWeapon(this);
-        _playerInput.Player.Gather.performed += ctx => ShootButtonPressed?.Invoke();
-
+        _resourceCatcher.SetWeaponLevelChecker(_weaponLevelChecker);
+        _resourceCatcher.SetPlayerUpgrader(_playerUpgrader);
+        
+        _resourceCatcherHandler.SetResourceCatcher(_resourceCatcher);
+        _resourceCatcherHandler.SetPlayerUpgrader(_playerUpgrader);
         _weaponLevelChecker.SetWeaponUpgrader(_upgrader);
+        _resourceView.SetCapacityHandler(_resourceCatcherHandler);
+        
+        _playerInput.Player.Gather.performed += ctx => ShootButtonPressed?.Invoke();
     }
 
     private void OnDisable()
@@ -59,11 +64,6 @@ public class Weapon : MonoBehaviour
         _resourceCatcher.StartedGatheringResources -= ProcessResourceGatherStart;
         _resourceCatcher.StoppedGatheringResources -= ProcessResourceGatherEnd;
         _upgradeSystem.WeaponUpgraded -= _upgrader.UpgradeWeapon;
-    }
-
-    public bool CanCollectResource(Resource resource)
-    {
-        return _weaponLevelChecker.IsWeaponLevelSufficient(resource);
     }
 
     public void SetUpgradeSystem(IUpgradeSystem upgradeSystem)
@@ -76,6 +76,14 @@ public class Weapon : MonoBehaviour
 
         _upgradeSystem = upgradeSystem;
         _upgradeSystem.WeaponUpgraded += _upgrader.UpgradeWeapon;
+    }
+
+    public void SetResourceTaker(IResourceTaker resourceTaker)
+    {
+        if (resourceTaker == null)
+            throw new ArgumentNullException(nameof(resourceTaker));
+        
+        _resourceCatcherHandler.SetResourceTaker(resourceTaker);
     }
 
     private void ProcessResourceGatherStart()

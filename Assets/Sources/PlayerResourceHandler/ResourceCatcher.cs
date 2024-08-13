@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public class ResourceCatcher : MonoBehaviour
+public class ResourceCatcher : MonoBehaviour,IResourceCatcher
 {
     private const float UpgradedLerpDuration = 1f;
     private const float UpgradedRadius = 1.2f;
@@ -15,15 +15,17 @@ public class ResourceCatcher : MonoBehaviour
     [SerializeField] private Transform _gunPosition;
     [SerializeField] private float _lerpDuration;
     [SerializeField] private Vector3 _targetScale;
-    [SerializeField] private SoundController _catchedResourceSound;
-    [SerializeField] private SoundController _errorSound;
+    [SerializeField] private SoundPlayer _catchedResourceSound;
+    [SerializeField] private SoundPlayer _errorSound;
 
+    private IShooter _shooter;
+    private ICapacityHandler _capacityHandler;
+    private IWeaponLevelChecker _weaponLevelChecker;
+    private IPlayerUpgrader _playerUpgrader;
     private UISliderShower _sliderShower;
     private UIPopUpWindowShower _popUpWindowShower;
-    private Weapon _weapon;
-    private ICapacityHandler _capacityHandler;
     private Coroutine _gatheringCoroutine;
-    private PlayerUpgrader _playerUpgrader;
+    private Transform _transform;
 
     public event Action<Resource> CatchedResource;
     public event Action StartedGatheringResources;
@@ -36,21 +38,33 @@ public class ResourceCatcher : MonoBehaviour
         _popUpWindowShower = UIServices.PopUpWindow;
     }
 
-    public IEnumerator LerpToGunPosition(Transform target)
+    private void Awake()
     {
-        if (_gunPosition == null)
-            yield break;
-
-        yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(target, target.position, _gunPosition.position, target.transform.localScale, _targetScale, _lerpDuration));
+        _transform = transform;
     }
 
-    public void SetWeapon(Weapon weapon)
+    private void OnDisable()
     {
-        if (weapon == null)
-            throw new ArgumentNullException();
+        _shooter.ShootButtonPressed -= Shoot;
+        _playerUpgrader.UpgradedGatherSpeed -= UpgradeResourceGatherSpeed;
+        _playerUpgrader.UpgradedGatherRadius -= UpgradeResourceGatherRadius;
+    }
 
-        _weapon = weapon;
-        _weapon.ShootButtonPressed += Shoot;
+    public void SetShooter(IShooter shooter)
+    {
+        if (shooter == null)
+            throw new ArgumentNullException(nameof(shooter));
+
+        _shooter = shooter;
+        _shooter.ShootButtonPressed += Shoot;
+    }
+
+    public void SetWeaponLevelChecker(IWeaponLevelChecker weaponLevelChecker)
+    {
+        if (weaponLevelChecker == null)
+            throw new ArgumentNullException(nameof(weaponLevelChecker));
+
+        _weaponLevelChecker = weaponLevelChecker;
     }
 
     public void SetCapacityChecker(ICapacityHandler handler)
@@ -60,14 +74,24 @@ public class ResourceCatcher : MonoBehaviour
 
         _capacityHandler = handler;
     }
+    
+    public void SetPlayerUpgrader(IPlayerUpgrader playerUpgrader)
+    {
+        if (playerUpgrader == null)
+            throw new ArgumentNullException(nameof(playerUpgrader));
+
+        _playerUpgrader = playerUpgrader;
+        _playerUpgrader.UpgradedGatherSpeed += UpgradeResourceGatherSpeed;
+        _playerUpgrader.UpgradedGatherRadius += UpgradeResourceGatherRadius;
+    }
 
     private void Shoot()
     {
-        if (_weapon == null)
+        if (_shooter == null)
             return;
 
-        Vector3 shootOrigin = transform.position + transform.forward * _distance;
-        RaycastHit[] hits = Physics.SphereCastAll(shootOrigin, _radius, transform.forward, _distance);
+        Vector3 shootDirection = _transform.position + _transform.forward * _distance;
+        RaycastHit[] hits = Physics.SphereCastAll(_transform.position, _radius, shootDirection, _distance);
 
         var resources = hits.Select(hit => hit.collider.GetComponent<Resource>()).Where(resource => resource != null);
 
@@ -75,7 +99,7 @@ public class ResourceCatcher : MonoBehaviour
         {
             Type resourceType = resource.GetType();
 
-            if (_weapon.CanCollectResource(resource) == false)
+            if (_weaponLevelChecker.IsWeaponLevelSufficient(resource) == false)
             {
                 _popUpWindowShower.AddMessageToQueue($"Weapon level is not enough to collect {resourceType.Name}");
                 _errorSound.PlaySound();
@@ -110,12 +134,13 @@ public class ResourceCatcher : MonoBehaviour
         StartedGatheringResources?.Invoke();
 
         _sliderShower.ActivateSlider(_lerpDuration);
-        yield return StartCoroutine(LerpToGunPosition(resource.transform));
+        yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(resource.transform, resource.transform.position, 
+            _gunPosition.position, resource.transform.localScale, _targetScale,_lerpDuration));
 
         _catchedResourceSound.PlaySound();
         StoppedGatheringResources?.Invoke();
     }
-
+    
     private void UpgradeResourceGatherSpeed()
     {
         _lerpDuration = UpgradedLerpDuration;
@@ -124,22 +149,5 @@ public class ResourceCatcher : MonoBehaviour
     private void UpgradeResourceGatherRadius()
     {
         _radius = UpgradedRadius;
-    }
-
-    public void SetPlayerUpgrader(PlayerUpgrader upgrader)
-    {
-        if (upgrader == null)
-            throw new ArgumentNullException(nameof(upgrader));
-
-        _playerUpgrader = upgrader;
-        _playerUpgrader.UpgradedGatherSpeed += UpgradeResourceGatherSpeed;
-        _playerUpgrader.UpgradedGatherRadius += UpgradeResourceGatherRadius;
-    }
-
-    private void OnDisable()
-    {
-        _weapon.ShootButtonPressed -= Shoot;
-        _playerUpgrader.UpgradedGatherSpeed -= UpgradeResourceGatherSpeed;
-        _playerUpgrader.UpgradedGatherRadius -= UpgradeResourceGatherRadius;
     }
 }

@@ -1,10 +1,19 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 
 public class PlayerToBasePointerView : MonoBehaviour
 {
     private Player _player;
+
+    [Inject]
+    private void Construct(Player player)
+    {
+        _player = player;
+        _player.ResourceAddedToBag += ActivatePointer;
+        _player.ResourceRemovedFromBag += DiactivatePointer;
+    }
 
     private void Start()
     {
@@ -25,15 +34,5 @@ public class PlayerToBasePointerView : MonoBehaviour
     public void ActivatePointer()
     {
         gameObject.SetActive(true);
-    }
-
-    public void SetPlayer(Player player)
-    {
-        if(player == null)
-            throw new ArgumentNullException(nameof(player));
-
-        _player = player;
-        _player.ResourceAddedToBag += ActivatePointer;
-        _player.ResourceRemovedFromBag += DiactivatePointer;
     }
 }
