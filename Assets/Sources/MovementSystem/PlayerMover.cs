@@ -8,9 +8,11 @@ public class PlayerMover : MonoBehaviour
 {
     private const float UpgradedMovementSpeed = 3f;
 
-    [SerializeField] private float _speed = 2.0f;
-    [SerializeField] private float _turnSpeed = 400.0f;
+    [SerializeField] private float _speed = 2f;
+    [SerializeField] private float _turnSpeed = 400f;
+    [SerializeField] private float _joysticTurnSpeed = 300f;
     [SerializeField] private LayerMask _layerMask;
+    [SerializeField] private FixedJoystick _joystick;
 
     private Rigidbody _rigidbody;
     private Vector3 _moveDirection = Vector3.zero;
@@ -30,7 +32,6 @@ public class PlayerMover : MonoBehaviour
 
         _rigidbody.useGravity = false;
         _rigidbody.freezeRotation = true;
-        _rigidbody.useGravity = false;
         _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         _playerInput.Player.Move.performed += OnMove;
@@ -87,13 +88,13 @@ public class PlayerMover : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector3 forward = _transform.forward * _inputVector.y;
-        Vector3 right = _transform.right * _inputVector.x;
+        Vector3 forward = _transform.forward * (_inputVector.y + _joystick.Vertical);
+        Vector3 right = _transform.right * (_inputVector.x + _joystick.Horizontal);
         _moveDirection = (forward + right).normalized * _speed;
-
+        
         _rigidbody.velocity = _moveDirection;
 
-        if (_inputVector.sqrMagnitude == 0)
+        if (_moveDirection.sqrMagnitude == 0)
         {
             _rigidbody.velocity = Vector3.zero;
         }
@@ -102,9 +103,9 @@ public class PlayerMover : MonoBehaviour
             _rigidbody.velocity = _moveDirection;
         }
 
-        _animator.SetRunningAnimation(_inputVector.sqrMagnitude > 0);
+        _animator.SetRunningAnimation(_moveDirection.sqrMagnitude > 0);
 
-        float turn = _inputVector.x * _turnSpeed * Time.deltaTime;
+        float turn = (_inputVector.x * _turnSpeed + _joystick.Horizontal * _joysticTurnSpeed) * Time.deltaTime;
         _transform.Rotate(0, turn, 0);
     }
 

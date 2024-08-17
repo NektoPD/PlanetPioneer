@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshCollider))]
 public class SpawnArea : MonoBehaviour
 {
+    [SerializeField] private float _maxSpawnAmount;
     [SerializeField] private LayerMask _layerMask;
 
     private MeshCollider _meshCollider;
@@ -29,7 +30,6 @@ public class SpawnArea : MonoBehaviour
         if (Physics.Raycast(randomPoint, rayDirection, out hit, Mathf.Infinity, _layerMask))
         {
             Vector3 surfacePoint = hit.point;
-
             resource.transform.position = surfacePoint;
         }
         else

@@ -23,12 +23,12 @@ public class GoldSpawner : ObjectPool<Gold>
 
     private void OnEnable()
     {
-        _sellingSystem.IndicatedResource += StartSpawning;
+        _sellingSystem.IndicatedResourceValue += StartSpawning;
     }
 
     private void OnDisable()
     {
-        _sellingSystem.IndicatedResource -= StartSpawning;
+        _sellingSystem.IndicatedResourceValue -= StartSpawning;
     }
     
     public Gold GetGold()
@@ -46,7 +46,7 @@ public class GoldSpawner : ObjectPool<Gold>
     {
         _isSpawning = true;
 
-        for (int i = 0; i <= spawnCount; i++)
+        for (int i = 0; i < spawnCount; i++)
         {
             if (TryGetObject(out Gold gold, _prefab))
             {

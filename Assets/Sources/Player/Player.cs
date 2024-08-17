@@ -22,7 +22,7 @@ public class Player : MonoBehaviour,IResourceTaker
     private PlayerMover _mover;
     private Transform _transform;
     
-    public event Action<Dictionary<Type, List<Resource>>> ResourcesProvidedToBase;
+    public event Action<Dictionary<Type, int>> ResourcesProvidedToBase;
     public event Action ResourceAddedToBag;
     public event Action ResourceRemovedFromBag;
     public event Action ResourceTaken;
@@ -96,7 +96,7 @@ public class Player : MonoBehaviour,IResourceTaker
 
     private void HandleCollisionWithBase()
     {
-        Dictionary<Type, List<Resource>> resources = _resourceHandler.GetAllResources();
+        Dictionary<Type, int> resources = _resourceHandler.GetAllResources();
         ResourcesProvidedToBase?.Invoke(resources);
         ResourceTaken?.Invoke();
     }

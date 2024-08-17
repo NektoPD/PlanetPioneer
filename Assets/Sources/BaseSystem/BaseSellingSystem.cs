@@ -4,42 +4,57 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-[RequireComponent(typeof(ParticleSpawner))]    
+[RequireComponent(typeof(ParticleSpawner))]
 public class BaseSellingSystem : MonoBehaviour, IInteractable
 {
-    [SerializeField] private ResourceSpawner _ironResourceSpawner;
-    [SerializeField] private ResourceSpawner _crystalResourceSpawner;
-    [SerializeField] private ResourceSpawner _plantResourceSpawner;
-    [SerializeField] private ResourceSpawner _alienArtifactResourceSpawner;
+    private const int IronValue = 1;
+    private const int CrystalValue = 2;
+    private const int PlantValue = 4;
+    private const int AlienArtifactValue = 6;
+    
     [SerializeField] private Transform _baseStartSellingPoint;
     [SerializeField] private Transform _baseFinishSellingPoint;
     [SerializeField] private float _lerpDuration;
     [SerializeField] private SoundPlayer _resourceGatherSound;
+    [SerializeField] private Iron _ironPrefab;
+    [SerializeField] private Crystal _crystalPrefab;
+    [SerializeField] private Plant _plantPrefab;
+    [SerializeField] private AlienArtifact _alinArtifactPrefab;
+    [SerializeField] private Transform _resourceToLerpSpawnPoint;
+    
+    private Iron _ironToLerp;
+    private Crystal _crystalToLerp;
+    private Plant _plantToLerp;
+    private AlienArtifact _alienArtifactToLerp;
 
-    private ParticleSpawner _particleSystem;
+    private ParticleSpawner _glowingZoneParticleSystem;
     private Player _player;
-    private readonly Queue<Resource> _resourceQueue = new Queue<Resource>();
-    private bool _isProcessing = false;
-    private int _ironValue = 1;
-    private int _crystalValue = 2;
-    private int _plantValue = 4;
-    private int _alienArtifactValue = 6;
+    private Dictionary<Type, int> _resourcesToProcess;
+    private bool _isProcessing;
 
-    public event Action<int> IndicatedResource;
+    public event Action<int> IndicatedResourceValue;
 
     [Inject]
     private void Construct(Player player)
     {
         _player = player;
         _player.ResourcesProvidedToBase += EnqueueResources;
-        _particleSystem = GetComponent<ParticleSpawner>();
-        _player.ResourceAddedToBag += _particleSystem.ActivateParticle;
+        _glowingZoneParticleSystem = GetComponent<ParticleSpawner>();
+        _player.ResourceAddedToBag += _glowingZoneParticleSystem.ActivateParticle;
+    }
+
+    private void Awake()
+    {
+        _ironToLerp = Instantiate(_ironPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
+        _crystalToLerp = Instantiate(_crystalPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
+        _plantToLerp = Instantiate(_plantPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
+        _alienArtifactToLerp = Instantiate(_alinArtifactPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
     }
 
     private void OnDisable()
     {
         _player.ResourcesProvidedToBase -= EnqueueResources;
-        _player.ResourceAddedToBag -= _particleSystem.ActivateParticle;
+        _player.ResourceAddedToBag -= _glowingZoneParticleSystem.ActivateParticle;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -50,18 +65,12 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
         }
     }
 
-    private void EnqueueResources(Dictionary<Type, List<Resource>> resources)
+    private void EnqueueResources(Dictionary<Type, int> resources)
     {
-        _particleSystem.DeactivateParticle();
+        _glowingZoneParticleSystem.DeactivateParticle();
 
-        foreach (var resourcePair in resources)
-        {
-            foreach (var resource in resourcePair.Value)
-            {
-                _resourceQueue.Enqueue(resource);
-            }
-        }
-
+        _resourcesToProcess = new Dictionary<Type, int>(resources);
+        
         if (!_isProcessing)
         {
             StartCoroutine(ProcessResourceQueue());
@@ -72,37 +81,47 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     {
         _isProcessing = true;
 
-        while (_resourceQueue.Count > 0)
+        foreach (var resourcePair in _resourcesToProcess)
         {
-            Resource resource = _resourceQueue.Dequeue();
-            _resourceGatherSound.PlaySound();
-
-            resource.SetInitScale();
-            yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(resource.transform, _baseStartSellingPoint.position, _baseFinishSellingPoint.position, _lerpDuration));
-            Type resourceType = resource.GetType();
-
-            switch (resourceType)
+            for (int i = 0; i < resourcePair.Value; i++)
             {
-                case Type t when t == typeof(Iron):
-                    IndicatedResource?.Invoke(_ironValue);
-                    _ironResourceSpawner.ReturnResourceToPull(resource);
-                    break;
-                case Type t when t == typeof(Crystal):
-                    IndicatedResource?.Invoke(_crystalValue);
-                    _crystalResourceSpawner.ReturnResourceToPull(resource);
-                    break;
-                case Type t when t == typeof(Plant):
-                    IndicatedResource?.Invoke(_plantValue);
-                    _plantResourceSpawner.ReturnResourceToPull(resource);
-                    break;
-                case Type t when t == typeof(AlienArtifact):
-                    IndicatedResource?.Invoke(_alienArtifactValue);
-                    _alienArtifactResourceSpawner.ReturnResourceToPull(resource);
-                    break;
+                _resourceGatherSound.PlaySound();
+                IndicateResourceValue(resourcePair.Key, resourcePair.Value);
+                yield return LerpResource(resourcePair.Key);
             }
         }
-
+        
         _isProcessing = false;
+    }
+
+    private IEnumerator LerpResource(Type resourceType)
+    {
+        yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(
+            resourceType == typeof(Iron) ? _ironToLerp.transform :
+            resourceType == typeof(Crystal) ? _crystalToLerp.transform :
+            resourceType == typeof(Plant) ? _plantToLerp.transform :
+            _alienArtifactToLerp.transform,
+            _baseStartSellingPoint.position, _baseFinishSellingPoint.position, _lerpDuration));
+    }
+
+    private void IndicateResourceValue(Type resourceType, int count)
+    {
+        if (resourceType == typeof(Iron))
+        {
+            IndicatedResourceValue?.Invoke(count * IronValue);
+        }
+        else if (resourceType == typeof(Crystal))
+        {
+            IndicatedResourceValue?.Invoke(count * CrystalValue);
+        }
+        else if (resourceType == typeof(Plant))
+        {
+            IndicatedResourceValue?.Invoke(count * PlantValue);
+        }
+        else if (resourceType == typeof(AlienArtifact))
+        {
+            IndicatedResourceValue?.Invoke(count * AlienArtifactValue);
+        }
     }
 }
 

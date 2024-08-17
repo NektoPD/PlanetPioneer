@@ -25,7 +25,7 @@ public class UIPopUpWindowShower : MonoBehaviour
 
     public void AddMessageToQueue(string message)
     {
-        _popupQueue.Enqueue(message);
+        _popupQueue.Enqueue(Lean.Localization.LeanLocalization.GetTranslationText(message));
 
         if(_popupCoroutine != null)
             return;

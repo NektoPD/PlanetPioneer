@@ -50,7 +50,7 @@ public class ResourceSpawner : ObjectPool<Resource>
         for (int i = 0; i < _spawnCount; i++)
         {
             if (availableSpawnPoints.Count == 0)
-                break;
+                return;
 
             int randomIndex = UnityEngine.Random.Range(0, availableSpawnPoints.Count);
             SpawnArea selectedSpawnArea = availableSpawnPoints[randomIndex];
@@ -77,8 +77,6 @@ public class ResourceSpawner : ObjectPool<Resource>
             throw new ArgumentNullException(nameof(resource));
 
         PutObject(resource);
-        resource.SetInitScale();
-        resource.SetAbsorbedToFalse();
     }
 
     public Resource GetResource()

@@ -7,7 +7,7 @@ public class PlayerUpgrader : MonoBehaviour, IPlayerUpgrader
     private const string PlayerBagUpgradedMessage = "Players bag is now upgraded";
     private const string PlayerGatherSpeedUpgradedMessage = "Player gather speed is now upgraded";
     private const string PlayerMovingSpeedUpgradedMessage = "Player moving speed is now upgraded";
-    private const string PlayerGatherRadiusUpgradedMessage = "Player gather speed in now upgraded";
+    private const string PlayerGatherRadiusUpgradedMessage = "Player gather radius in now upgraded";
 
     private BaseUpgrader _baseUpgrader;
     private UIPopUpWindowShower _windowShower;

@@ -113,18 +113,12 @@ public class ResourceCatcher : MonoBehaviour,IResourceCatcher
                 return;
             }
 
-            if (resource.IsAbsorbed)
-            {
-                return;
-            }
-
             if (_gatheringCoroutine != null)
             {
                 StopCoroutine(_gatheringCoroutine);
             }
 
             _gatheringCoroutine = StartCoroutine(GatherResource(resource));
-            resource.SetAbsorbedToTrue();
             CatchedResource?.Invoke(resource);
         }
     }

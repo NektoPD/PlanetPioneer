@@ -43,7 +43,7 @@ public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
         else
         {
             @object = Instantiate(prefab);
-            @object.GetComponent<PlanetRotationConstrain>().SetPlanetPosition(_planetPosition); //не очень
+            @object.GetComponent<PlanetRotationConstrain>().SetPlanetPosition(_planetPosition);
             return true;
         }
     }

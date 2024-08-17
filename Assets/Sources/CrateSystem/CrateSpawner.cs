@@ -7,7 +7,6 @@ public class CrateSpawner : ObjectPool<Crate>
     [SerializeField] private Crate _prefab;
     [SerializeField] private Transform _spawnPointPosition;
     [SerializeField] private BaseUpgrader _baseUpgrader;
-    [SerializeField] private UIPopUpWindowShower _windowShower;
     [SerializeField] private SoundPlayer _crateSpawnSound;
 
     private ParticleSpawner _particleSpawner;
@@ -28,6 +27,7 @@ public class CrateSpawner : ObjectPool<Crate>
     {
         _baseUpgrader.BaseUpgraded -= SpawnCrate;
     }
+    
     public void SpawnCrate()
     {
         if(TryGetObject(out Crate crate, _prefab))

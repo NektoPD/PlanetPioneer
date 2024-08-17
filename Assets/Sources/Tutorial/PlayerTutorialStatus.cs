@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerTutorialStatus : MonoBehaviour
@@ -6,40 +7,25 @@ public class PlayerTutorialStatus : MonoBehaviour
 
     [SerializeField] private TutorialWindow _tutorialWindow;
 
-    private bool _isTutorialViewed = false;
+    private bool _isTutorialViewed;
 
     public bool IsTutorialCompleted => _isTutorialViewed;
-    
+
     private void OnEnable()
     {
-        if (LoadTutorialStatus() == false)
-            SetDefaultTutorialStatus();
+        LoadTutorialStatus();
 
         _tutorialWindow.TutorialViewed += TutorialCompleted;
     }
 
     private void OnDisable()
     {
-        if (_tutorialWindow != null)
-        {
-            _tutorialWindow.TutorialViewed -= TutorialCompleted;
-        }
+        _tutorialWindow.TutorialViewed -= TutorialCompleted;
     }
 
     public void TutorialCompleted()
     {
         _isTutorialViewed = true;
-        SaveTutorialStatus();
-
-        if (_tutorialWindow != null)
-        {
-            _tutorialWindow.TutorialViewed -= TutorialCompleted;
-        }
-    }
-
-    public void SetDefaultTutorialStatus()
-    {
-        _isTutorialViewed = false;
         SaveTutorialStatus();
     }
 
@@ -49,14 +35,11 @@ public class PlayerTutorialStatus : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    private bool LoadTutorialStatus()
+    private void LoadTutorialStatus()
     {
         if (PlayerPrefs.HasKey(TutorialStatusKey))
         {
-            _isTutorialViewed = PlayerPrefs.GetInt(TutorialStatusKey, 0) == 1;
-            return true;
+            _isTutorialViewed = PlayerPrefs.GetInt(TutorialStatusKey) == 1;
         }
-
-        return false;
     }
 }

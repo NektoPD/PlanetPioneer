@@ -6,6 +6,7 @@ public class TutorialWindow : MonoBehaviour
 {
     [SerializeField] private TMP_Text _skipTutorialText;
     [SerializeField] private TMP_Text _startNextTutorialText;
+    [SerializeField] private PlayerTutorialStatus _playerTutorialStatus;
 
     private UITutorialText[] _textBoxes;
     private int _currentTutorialWindow;
@@ -23,6 +24,9 @@ public class TutorialWindow : MonoBehaviour
     {
         _playerInput.Enable();
         _playerInput.Player.Skip.performed += ctx => OnSkipButtonPressed();
+        
+        if(_playerTutorialStatus.IsTutorialCompleted)
+            gameObject.SetActive(false);
     }
 
     private void OnDisable()

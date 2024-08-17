@@ -19,31 +19,33 @@ public class SaveSystem : ISaveSystem
     private RocketBuilder _rocketBuilder;
     private IWeaponUpgrader _weaponUpgrader;
     private IResourceHandler _catchedResourceHandler;
+    private IGoldHandler _goldHandler;
     private Player _player;
-    private string _filePath;
-    
+    private string _filePath = Application.persistentDataPath + "/Save.json";
+
     [Inject]
     private void Construct(Player player, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader,
+        IGoldHandler goldHandler,
         PlanetServicesProvider planetServicesProvider)
     {
         _player = player;
         _weaponUpgrader = weaponUpgrader;
         _catchedResourceHandler = resourceHandler;
+        _goldHandler = goldHandler;
         _baseUpgrader = planetServicesProvider.BaseUpgrader;
         _rocketBuilder = planetServicesProvider.RocketBuilder;
-        _filePath = Application.persistentDataPath + "/Save.json";
     }
 
     public void LoadProgress()
     {
         LoadPlayerPrefs();
-        LoadResourcesFromJson();
+       //LoadResourcesFromJson();
     }
 
     public void SaveProgress()
     {
         SavePlayerPrefs();
-        SaveResourcesToJson();
+       // SaveResourcesToJson();
     }
 
     private void SavePlayerPrefs()
@@ -51,14 +53,14 @@ public class SaveSystem : ISaveSystem
         PlayerPrefs.SetInt(WeaponLevelKey, _weaponUpgrader.CurrentLevel);
         PlayerPrefs.SetInt(BaseUpgradesLeftKey, _baseUpgrader.RemainingUpgrades);
         PlayerPrefs.SetInt(RocketLevelKey, _rocketBuilder.CurrentBuildParts);
-        PlayerPrefs.SetInt(GoldAmountKey, _player.CurrentGoldAmount);
+        PlayerPrefs.SetInt(GoldAmountKey, _goldHandler.GoldAmount);
         PlayerPrefs.SetFloat(PlayerXPositionKey, _player.CurrentXPosition);
         PlayerPrefs.SetFloat(PlayerYPositionKey, _player.CurrentYPosition);
         PlayerPrefs.SetFloat(PlayerZPositionKey, _player.CurrentZPosition);
         PlayerPrefs.Save();
     }
 
-    private void SaveResourcesToJson()
+    /*private void SaveResourcesToJson()
     {
         List<ResourceDto> resourceDtos = GetSaveResourcesData();
         try
@@ -76,9 +78,9 @@ public class SaveSystem : ISaveSystem
         {
             throw new InvalidOperationException(nameof(ex));
         }
-    }
+    }*/
 
-    private void LoadResourcesFromJson()
+    /*private void LoadResourcesFromJson()
     {
         if (!File.Exists(_filePath))
             return;
@@ -102,7 +104,7 @@ public class SaveSystem : ISaveSystem
         {
             throw new InvalidOperationException(nameof(ex));
         }
-    }
+    }*/
 
     private void LoadPlayerPrefs()
     {
@@ -153,11 +155,11 @@ public class SaveSystem : ISaveSystem
     {
         if (PlayerPrefs.HasKey(GoldAmountKey))
         {
-            _player.ProcessGoldIncreaseAmount(PlayerPrefs.GetInt(GoldAmountKey));
+            _goldHandler.SetGoldAmount(PlayerPrefs.GetInt(GoldAmountKey));
         }
     }
 
-    private List<ResourceDto> GetSaveResourcesData()
+    /*private List<ResourceDto> GetSaveResourcesData()
     {
         return new List<ResourceDto>()
         {
@@ -166,7 +168,7 @@ public class SaveSystem : ISaveSystem
             CreateResourceDataToSave(_catchedResourceHandler.CurrentPlantAmount),
             CreateResourceDataToSave(_catchedResourceHandler.CurrentAlienArtifactAmount)
         };
-    }
+    }*/
 
     private ResourceDto CreateResourceDataToSave(List<Resource> resources)
     {
@@ -177,5 +179,6 @@ public class SaveSystem : ISaveSystem
 [Serializable]
 public class ResourceDto
 {
-    public List<Resource> Resources;
+    public Resource ResourceType;
+    public int Count;
 }

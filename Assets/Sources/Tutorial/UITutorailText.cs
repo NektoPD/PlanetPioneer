@@ -5,8 +5,8 @@ using UnityEngine;
 public class UITutorialText : MonoBehaviour
 {
     [SerializeField] private SoundPlayer _textSound;
-
-    private TMP_Text _textBox;
+    [SerializeField] private TMP_Text _textBox;
+    
     private string _text;
     private float _charDisplayInterval = 0.02f;
     private Coroutine _coroutine;
@@ -14,14 +14,13 @@ public class UITutorialText : MonoBehaviour
 
     private void Awake()
     {
-        _textBox = GetComponent<TMP_Text>();
-        _text = _textBox.text;
-        _textBox.text = "";
         _playerInput = new PlayerInput();
     }
 
     private void OnEnable()
     {
+        _text = _textBox.text;
+        _textBox.text = "";
         _playerInput.Enable();
         _playerInput.Player.Skip.performed += ctx => SkipButtonPressed();
     }

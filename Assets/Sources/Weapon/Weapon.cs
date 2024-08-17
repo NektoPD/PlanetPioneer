@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(WeaponLevelChecker))]
 [RequireComponent(typeof(ResourceCatcher))]
@@ -11,6 +12,7 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
     [SerializeField] private SoundPlayer _weaponSound;
     [SerializeField] private PlayerUpgrader _playerUpgrader;
     [SerializeField] private PlayerResourcesView _resourceView;
+    [SerializeField] private Button _shootButton;
 
     private PlayerInput _playerInput;
     private ResourceCatcher _resourceCatcher;
@@ -41,6 +43,7 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
 
         _resourceCatcher.StartedGatheringResources += ProcessResourceGatherStart;
         _resourceCatcher.StoppedGatheringResources += ProcessResourceGatherEnd;
+        _shootButton.onClick.AddListener(OnShootButtonPressed);
     }
 
     private void Start()
@@ -64,6 +67,7 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
         _resourceCatcher.StartedGatheringResources -= ProcessResourceGatherStart;
         _resourceCatcher.StoppedGatheringResources -= ProcessResourceGatherEnd;
         _upgradeSystem.WeaponUpgraded -= _upgrader.UpgradeWeapon;
+        _shootButton.onClick.RemoveListener(OnShootButtonPressed);
     }
 
     public void SetUpgradeSystem(IUpgradeSystem upgradeSystem)
@@ -98,5 +102,10 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
         StopedGatheringResources?.Invoke();
         _particleSpawner.DeactivateParticle();
         _weaponSound.StopPlayingSound();
+    }
+
+    private void OnShootButtonPressed()
+    {
+        ShootButtonPressed?.Invoke();
     }
 }
