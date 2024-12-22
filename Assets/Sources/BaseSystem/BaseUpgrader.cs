@@ -7,9 +7,11 @@ public class BaseUpgrader : MonoBehaviour
     private const string BaseFullyUpgradedMessage = "Base is already fully upgraded.";
     private const string NoMoreAvailableUnitsMessage = "No more units available to upgrade.";
     private const string BaseUnitUpgradedMessage = "Base Unit upgraded";
-
+    private const int FirstAddShowIntValue = 2;
+    
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private UIPopUpWindowShower _windowShower;
+    [SerializeField] private VideoAd _adSystem;
 
     private BaseUnit[] _baseUnits;
     private int _currentUpgrades;
@@ -64,10 +66,16 @@ public class BaseUpgrader : MonoBehaviour
 
             _windowShower.AddMessageToQueue(BaseUnitUpgradedMessage);
 
+            if (_currentUpgrades == FirstAddShowIntValue)
+            {
+                _adSystem.ShowInterstitial();
+            }
+
             if (_currentUpgrades >= _maximumUpgrades)
             {
                 _windowShower.AddMessageToQueue(BaseFullyUpgradedMessage);
                 BaseFullyUpgraded?.Invoke();
+                _adSystem.ShowInterstitial();
             }
         }
         else
@@ -84,7 +92,7 @@ public class BaseUpgrader : MonoBehaviour
         }
 
         UpdateUnitsState(currentUpgrades);
-
+        
         if (_currentUpgrades != currentUpgrades)
             _currentUpgrades = currentUpgrades;
         

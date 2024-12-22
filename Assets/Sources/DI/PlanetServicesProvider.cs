@@ -9,10 +9,13 @@ public class PlanetServicesProvider : MonoInstaller
     [SerializeField] private BaseUpgrader _baseUpgrader;
     [SerializeField] private RocketBuilder _rocketBuilder;
     [SerializeField] private BaseSellingSystem _baseSellingSystem;
+    [SerializeField] private ScoreSystem _scoreSystem;
 
+    public ScoreSystem ScoreSystem => _scoreSystem;
     public Transform PlanetPosition => _planetPosition;
     public UpgradeSystem UpgradeSystem => _upgradeSystem;
     public BaseUpgrader BaseUpgrader => _baseUpgrader;
     public RocketBuilder RocketBuilder => _rocketBuilder;
     public BaseSellingSystem BaseSellingSystem => _baseSellingSystem;
+    
 }

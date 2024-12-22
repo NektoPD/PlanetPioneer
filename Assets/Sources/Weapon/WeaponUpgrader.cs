@@ -14,6 +14,8 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
     private const int WeaponThirdLevel = 3;
     private const int WeaponEndLevel = 4;
 
+    [SerializeField] private VideoAd _adSystem;
+    
     private UIPopUpWindowShower _windowShower;
     private int _currentLevel = 1;
 
@@ -48,10 +50,16 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
 
             ShowUpgradeMessage();
 
+            if (_currentLevel == WeaponSecondLevel)
+            {
+                _adSystem.ShowInterstitial();
+            }
+            
             if (_currentLevel >= WeaponEndLevel)
             {
                 WeaponFullyUpgraded?.Invoke();
                 _windowShower.AddMessageToQueue(WeaponFullyUpgradedMessage);
+                _adSystem.ShowInterstitial();
             }
         }
     }
@@ -78,16 +86,17 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
     {
         if (_currentLevel > WeaponEndLevel || _currentLevel < WeaponStartLevel)
             throw new ArgumentOutOfRangeException(nameof(level));
-
+        
         for (int i = _currentLevel; i < level; i++)
         {
             WeaponUpgraded?.Invoke();
-            ShowUpgradeMessage();
         }
 
         if (_currentLevel != level)
+        {
             _currentLevel = level;
-
+            ShowUpgradeMessage();
+        }
 
         if (_currentLevel >= WeaponEndLevel)
         {

@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Zenject;
 
-public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler,IResourceHandler
+public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler, IResourceHandler
 {
     private IResourceCatcher _resourceCatcher;
     private IPlayerUpgrader _playerUpgrader;
     private IResourceTaker _resourceTaker;
-    
+
     private int _startIronCapacity = 15;
     private int _startCrystalCapacity = 10;
     private int _startPlantCapacity = 5;
@@ -30,14 +28,13 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler,IResourceH
 
     public IReadOnlyDictionary<Type, int> CurrentResourceCatched => _resources;
     public IReadOnlyDictionary<Type, int> MaxCapacityConstaints => _maxCapacityConstraints;
-    /*public List<Resource> CurrentIronAmount => _resources.GetValueOrDefault(typeof(Iron));
-    public List<Resource> CurrentCrystalAmount => _resources.GetValueOrDefault(typeof(Crystal));
-    public List<Resource> CurrentPlantAmount => _resources.GetValueOrDefault(typeof(Plant));
-    public List<Resource> CurrentAlienArtifactAmount => _resources.GetValueOrDefault(typeof(AlienArtifact));*/
+    public int CurrentIronAmount => _resources.GetValueOrDefault(typeof(Iron));
+    public int CurrentCrystalAmount => _resources.GetValueOrDefault(typeof(Crystal));
+    public int CurrentPlantAmount => _resources.GetValueOrDefault(typeof(Plant));
+    public int CurrentAlienArtifactAmount => _resources.GetValueOrDefault(typeof(AlienArtifact));
     
-    
-    private void Start()
-    { 
+    private void Awake()
+    {
         _maxCapacityConstraints[typeof(Iron)] = _startIronCapacity;
         _maxCapacityConstraints[typeof(Crystal)] = _startCrystalCapacity;
         _maxCapacityConstraints[typeof(Plant)] = _startPlantCapacity;
@@ -74,21 +71,22 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler,IResourceH
         _resourceTaker = resourceTaker;
         _resourceTaker.ResourceTaken += ClearAllResources;
     }
-    
+
     public bool IsMaxCapacityReached(Type resourceType)
     {
         if (_resources.ContainsKey(resourceType))
         {
             return _resources[resourceType] >= _maxCapacityConstraints[resourceType];
         }
+
         return false;
     }
-    
+
     public Dictionary<Type, int> GetAllResources()
     {
         return new Dictionary<Type, int>(_resources);
     }
-    
+
     private void AddResource(Resource resource)
     {
         if (resource == null)
@@ -105,9 +103,9 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler,IResourceH
     }
 
     private void ClearAllResources()
-    { 
+    {
         _resources.Clear();
-        
+
         ResourceAmountChanged?.Invoke();
         ResourcesCleared?.Invoke();
     }
@@ -120,17 +118,20 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler,IResourceH
         _maxCapacityConstraints[typeof(AlienArtifact)] = _upgradedAlienArtifactCapacity;
         MaxCapacityUpdated?.Invoke();
     }
-    
-    public void SetResourceAmount(Dictionary<Type, int> resources)
+
+    public void SetResourceAmount(Type resourceType, int count)
     {
-        foreach (var resource in resources)
+        if (resourceType == null)
+            throw new ArgumentNullException(nameof(resourceType));
+
+        if (count <= 0)
         {
-            if (_resources.ContainsKey(resource.Key))
-            {
-                _resources[resource.Key] = resource.Value;
-            }
+            _resources[resourceType] = 0;
+            return;
         }
         
+        _resources[resourceType] = count;
+        ResourceAdded?.Invoke();
         ResourceAmountChanged?.Invoke();
     }
 }

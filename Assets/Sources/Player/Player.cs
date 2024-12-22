@@ -14,6 +14,7 @@ public class Player : MonoBehaviour,IResourceTaker
     [SerializeField] private PlayerGoldView _goldView;
     [SerializeField] private ResourceCatcher _resourceCatcher;
     [SerializeField] private CatchedResourceHandler _resourceHandler;
+    [SerializeField] private PlayerAnimator _animator;
     
     private UpgradeSystem _upgradeSystem;
     private PlayerCollisionHandler _collisionHandler;
@@ -21,6 +22,7 @@ public class Player : MonoBehaviour,IResourceTaker
     private PlayerUpgrader _upgrader;
     private PlayerMover _mover;
     private Transform _transform;
+    private RocketBuilder _rocketBuilder;
     
     public event Action<Dictionary<Type, int>> ResourcesProvidedToBase;
     public event Action ResourceAddedToBag;
@@ -36,6 +38,7 @@ public class Player : MonoBehaviour,IResourceTaker
     private void Cunstruct(PlanetServicesProvider planetServices)
     {
         _upgradeSystem = planetServices.UpgradeSystem;
+        _rocketBuilder = planetServices.RocketBuilder;
     }
 
     private void Awake()
@@ -56,6 +59,8 @@ public class Player : MonoBehaviour,IResourceTaker
 
         _resourceHandler.ResourceAdded += ProcessResourceAddedToBag;
         _resourceHandler.ResourcesCleared += ProcessResourceRemovedFromBag;
+
+        _rocketBuilder.RocketReady += _animator.SetJumpingAnimation;
     }
 
     private void OnDisable()

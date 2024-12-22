@@ -16,16 +16,16 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     [SerializeField] private Transform _baseFinishSellingPoint;
     [SerializeField] private float _lerpDuration;
     [SerializeField] private SoundPlayer _resourceGatherSound;
-    [SerializeField] private Iron _ironPrefab;
-    [SerializeField] private Crystal _crystalPrefab;
-    [SerializeField] private Plant _plantPrefab;
-    [SerializeField] private AlienArtifact _alinArtifactPrefab;
+    [SerializeField] private GameObject _ironPrefab;
+    [SerializeField] private GameObject _crystalPrefab;
+    [SerializeField] private GameObject _plantPrefab;
+    [SerializeField] private GameObject _alinArtifactPrefab;
     [SerializeField] private Transform _resourceToLerpSpawnPoint;
     
-    private Iron _ironToLerp;
-    private Crystal _crystalToLerp;
-    private Plant _plantToLerp;
-    private AlienArtifact _alienArtifactToLerp;
+    private GameObject _ironToLerp;
+    private GameObject _crystalToLerp;
+    private GameObject _plantToLerp;
+    private GameObject _alienArtifactToLerp;
 
     private ParticleSpawner _glowingZoneParticleSystem;
     private Player _player;

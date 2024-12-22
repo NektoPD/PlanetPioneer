@@ -24,9 +24,6 @@ public class TutorialWindow : MonoBehaviour
     {
         _playerInput.Enable();
         _playerInput.Player.Skip.performed += ctx => OnSkipButtonPressed();
-        
-        if(_playerTutorialStatus.IsTutorialCompleted)
-            gameObject.SetActive(false);
     }
 
     private void OnDisable()
@@ -37,6 +34,11 @@ public class TutorialWindow : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(_playerTutorialStatus.IsTutorialCompleted);
+        
+        if(_playerTutorialStatus.IsTutorialCompleted){}
+            gameObject.SetActive(false);
+        
         DeactivateAllTextBoxes();
         ActivateCurrentTextBox();
         _startNextTutorialText.enabled = false;

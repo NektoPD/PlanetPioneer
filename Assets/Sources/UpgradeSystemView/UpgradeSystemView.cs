@@ -11,18 +11,21 @@ public class UpgradeSystemView : MonoBehaviour
     [SerializeField] private Button _upgradeWeaponButton;
     [SerializeField] private Button _upgradeBaseButton;
     [SerializeField] private Button _upgradeRocketButton;
+    [SerializeField] private Button _pushToWatchAdButton;
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private TMP_Text _baseUpgradeCost;
+    [SerializeField] private TMP_Text _baseUpgradeText;
     [SerializeField] private TMP_Text _weaponUpgradeCost;
     [SerializeField] private TMP_Text _rocketUpgradeCost;
+    [SerializeField] private TMP_Text _rocketUpgradeText;
     [SerializeField] private Sprite _upgradeImage;
     [SerializeField] private BaseUpgrader _baseUpgrade;
     [SerializeField] private RocketBuilder _rocketBuilder;
+    [SerializeField] private UIUpgradeImageSlot[] _baseUpgradeSlots;
+    [SerializeField] private UIUpgradeImageSlot[] _weaponUpgradeSlots;
+    [SerializeField] private UIUpgradeImageSlot[] _rocketUpgradeSlots;
     
     private WeaponUpgrader _weaponUpgrader;
-    private UIUpgradeImageSlot[] _baseUpgradeSlots;
-    private UIUpgradeImageSlot[] _weaponUpgradeSlots;
-    private UIUpgradeImageSlot[] _rocketUpgradeSlots;
 
     private CanvasGroup _canvas;
 
@@ -30,14 +33,11 @@ public class UpgradeSystemView : MonoBehaviour
     public event Action OnRocketUpgradeButtonClicked;
     public event Action OnWeaponUpgradeButtonClicked;
     public event Action RocketUpgradeButtonEnabled;
+    public event Action WatchAdButtonClicked;
 
     private void Awake()
     {
         _canvas = GetComponentInParent<CanvasGroup>();
-
-        _baseUpgradeSlots = _upgradeBaseButton.GetComponentsInChildren<UIUpgradeImageSlot>();
-        _weaponUpgradeSlots = _upgradeWeaponButton.GetComponentsInChildren<UIUpgradeImageSlot>();
-        _rocketUpgradeSlots = _upgradeRocketButton.GetComponentsInChildren<UIUpgradeImageSlot>();
     }
 
     private void Start()
@@ -45,9 +45,12 @@ public class UpgradeSystemView : MonoBehaviour
         _upgradeWeaponButton.onClick.AddListener(HandleOnWeaponButtonClick);
         _upgradeBaseButton.onClick.AddListener(HandleOnBaseButtonClick);
         _upgradeRocketButton.onClick.AddListener(HandleOnRocketButtonClick);
+        _pushToWatchAdButton.onClick.AddListener(HandleWatchAddButtonPushed);
 
         HideUpgradeWindow();
         DisableButton(_upgradeRocketButton);
+        _rocketUpgradeCost.enabled = false;
+        _rocketUpgradeText.enabled = false;
     }
 
     private void OnEnable()
@@ -91,21 +94,29 @@ public class UpgradeSystemView : MonoBehaviour
     }
 
     private void HandleOnWeaponButtonClick() => OnWeaponUpgradeButtonClicked?.Invoke();
+
     private void HandleOnRocketButtonClick() => OnRocketUpgradeButtonClicked?.Invoke();
+
     private void HandleOnBaseButtonClick() => OnBaseUpgradeButtonClicked?.Invoke();
 
     private void SetBaseUpgradeValue(int value) => _baseUpgradeCost.text = value.ToString();
+
     private void SetWeaponUpgradeValue(int value) => _weaponUpgradeCost.text = value.ToString();
+
     private void SetRocketUpgradeValue(int value) => _rocketUpgradeCost.text = value.ToString();
 
     private void DiactivateRocketUpgradeButton() => _upgradeRocketButton.enabled = false;
+
     private void DiactivateWeaponUpgradeButton() => _upgradeWeaponButton.enabled = false;
 
     private void DisableButton(Button button) => button.gameObject.SetActive(false);
+
     private void EnableButton(Button button) => button.gameObject.SetActive(true);
 
     private void UpgradeBaseSlots() => SetUpgradeSlotToActive(_baseUpgradeSlots);
+
     private void UpgradeWeaponSlots() => SetUpgradeSlotToActive(_weaponUpgradeSlots);
+
     private void UpgradeRocketSlots() => SetUpgradeSlotToActive(_rocketUpgradeSlots);
 
     private void ShowUpgradeWindow()
@@ -120,10 +131,21 @@ public class UpgradeSystemView : MonoBehaviour
         _canvas.blocksRaycasts = false;
     }
 
+    private void HandleWatchAddButtonPushed()
+    {
+        WatchAdButtonClicked?.Invoke();
+    }
+
     private void HandleBaseFullyUpgraded()
     {
         DisableButton(_upgradeBaseButton);
+        _baseUpgradeCost.enabled = false;
+        _baseUpgradeText.enabled = false;
+        
         EnableButton(_upgradeRocketButton);
+        _rocketUpgradeCost.enabled = true;
+        _rocketUpgradeText.enabled = true;
+        
         RocketUpgradeButtonEnabled?.Invoke();
     }
 

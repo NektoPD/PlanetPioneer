@@ -1,4 +1,4 @@
-using System;
+ using System;
 using UnityEngine;
 
 public class PlayerTutorialStatus : MonoBehaviour
@@ -15,15 +15,15 @@ public class PlayerTutorialStatus : MonoBehaviour
     {
         LoadTutorialStatus();
 
-        _tutorialWindow.TutorialViewed += TutorialCompleted;
+        _tutorialWindow.TutorialViewed += CompleteTutorial;
     }
 
     private void OnDisable()
     {
-        _tutorialWindow.TutorialViewed -= TutorialCompleted;
+        _tutorialWindow.TutorialViewed -= CompleteTutorial;
     }
 
-    public void TutorialCompleted()
+    private void CompleteTutorial()
     {
         _isTutorialViewed = true;
         SaveTutorialStatus();

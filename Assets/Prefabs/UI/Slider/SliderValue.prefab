@@ -104,7 +104,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -171,7 +171,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 765593131189570274, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_text
-      value: 
+      value: Gathering Resources
+      objectReference: {fileID: 0}
+    - target: {fileID: 765593131189570274, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
+      propertyPath: m_margin.z
+      value: -120.85231
       objectReference: {fileID: 0}
     - target: {fileID: 765593131189570274, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_textAlignment
@@ -184,6 +188,14 @@ PrefabInstance:
     - target: {fileID: 765593131189570274, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 765593131189570284, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
+      propertyPath: m_Name
+      value: Text
+      objectReference: {fileID: 0}
+    - target: {fileID: 765593131189570285, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 436
       objectReference: {fileID: 0}
     - target: {fileID: 765593131247733538, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_text
@@ -223,11 +235,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.149
+      value: 0.16600001
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.24083635
+      value: 0.24100001
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_AnchorMin.y
@@ -239,7 +251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -36.744873
+      value: -55.744873
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -271,11 +283,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 7.5000305
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.87246704
+      value: 0.8724365
       objectReference: {fileID: 0}
     - target: {fileID: 765593131495191081, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -342,7 +354,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 765593131247733548, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0107fc647d53a448abc8d9164eff4df9, type: 3}

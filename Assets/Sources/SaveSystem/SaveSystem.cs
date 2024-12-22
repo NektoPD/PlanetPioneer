@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -14,6 +13,7 @@ public class SaveSystem : ISaveSystem
     private const string PlayerXPositionKey = "XPosition";
     private const string PlayerYPositionKey = "YPosition";
     private const string PlayerZPositionKey = "ZPosition";
+    private const string PlayerTimerValue = "Timer";
 
     private BaseUpgrader _baseUpgrader;
     private RocketBuilder _rocketBuilder;
@@ -21,6 +21,7 @@ public class SaveSystem : ISaveSystem
     private IResourceHandler _catchedResourceHandler;
     private IGoldHandler _goldHandler;
     private Player _player;
+    private ScoreSystem _scoreSystem;
     private string _filePath = Application.persistentDataPath + "/Save.json";
 
     [Inject]
@@ -34,18 +35,19 @@ public class SaveSystem : ISaveSystem
         _goldHandler = goldHandler;
         _baseUpgrader = planetServicesProvider.BaseUpgrader;
         _rocketBuilder = planetServicesProvider.RocketBuilder;
+        _scoreSystem = planetServicesProvider.ScoreSystem;
     }
 
     public void LoadProgress()
     {
         LoadPlayerPrefs();
-       //LoadResourcesFromJson();
+        LoadResourcesFromJson();
     }
 
     public void SaveProgress()
     {
         SavePlayerPrefs();
-       // SaveResourcesToJson();
+        SaveResourcesToJson();
     }
 
     private void SavePlayerPrefs()
@@ -57,54 +59,60 @@ public class SaveSystem : ISaveSystem
         PlayerPrefs.SetFloat(PlayerXPositionKey, _player.CurrentXPosition);
         PlayerPrefs.SetFloat(PlayerYPositionKey, _player.CurrentYPosition);
         PlayerPrefs.SetFloat(PlayerZPositionKey, _player.CurrentZPosition);
+        PlayerPrefs.SetFloat(PlayerTimerValue, _scoreSystem.Timer);
         PlayerPrefs.Save();
     }
 
-    /*private void SaveResourcesToJson()
+    private void SaveResourcesToJson()
     {
-        List<ResourceDto> resourceDtos = GetSaveResourcesData();
+        var resourceDtos = GetSaveResourcesData();
+        var resourceListDto = new ResourceListDto { Resources = resourceDtos };
+
         try
         {
-            using (var writer = new StreamWriter(_filePath))
-            {
-                foreach (var resource in resourceDtos)
-                {
-                    string json = JsonUtility.ToJson(resource);
-                    writer.WriteLine(json);
-                }
-            }
+            string json = JsonUtility.ToJson(resourceListDto, true);
+            File.WriteAllText(_filePath, json);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException(nameof(ex));
+            Debug.LogError($"Failed to save resources: {ex.Message}");
         }
-    }*/
+    }
 
-    /*private void LoadResourcesFromJson()
+    private void LoadResourcesFromJson()
     {
         if (!File.Exists(_filePath))
             return;
 
-        var resources = new List<ResourceDto>();
         try
         {
-            string[] lines = File.ReadAllLines(_filePath);
-            foreach (string line in lines)
+            string json = File.ReadAllText(_filePath);
+            var resourceListDto = JsonUtility.FromJson<ResourceListDto>(json);
+
+            foreach (var resource in resourceListDto.Resources)
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                switch (resource.ResourceType)
                 {
-                    ResourceDto resource = JsonUtility.FromJson<ResourceDto>(line);
-                    resources.Add(resource);
+                    case ResourceType.Iron:
+                        _catchedResourceHandler.SetResourceAmount(typeof(Iron), resource.Count);
+                        break;
+                    case ResourceType.Crystal:
+                        _catchedResourceHandler.SetResourceAmount(typeof(Crystal), resource.Count);
+                        break;
+                    case ResourceType.Plant:
+                        _catchedResourceHandler.SetResourceAmount(typeof(Plant), resource.Count);
+                        break;
+                    case ResourceType.AlienArtifact:
+                        _catchedResourceHandler.SetResourceAmount(typeof(AlienArtifact), resource.Count);
+                        break;
                 }
             }
-            
-            _catchedResourceHandler.SetResourceAmount(resources.SelectMany(r => r.Resources).ToList());
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException(nameof(ex));
+            Debug.LogError($"Failed to load resources: {ex.Message}");
         }
-    }*/
+    }
 
     private void LoadPlayerPrefs()
     {
@@ -113,6 +121,13 @@ public class SaveSystem : ISaveSystem
         LoadRocketLevel();
         LoadGoldAmount();
         LoadPlayerPosition();
+        LoadTimerValue();
+    }
+
+    private void LoadTimerValue()
+    {
+        if(PlayerPrefs.HasKey(PlayerTimerValue))
+            _scoreSystem.SetTimer(PlayerPrefs.GetFloat(PlayerTimerValue));
     }
 
     private void LoadPlayerPosition()
@@ -159,26 +174,35 @@ public class SaveSystem : ISaveSystem
         }
     }
 
-    /*private List<ResourceDto> GetSaveResourcesData()
+    private List<ResourceDto> GetSaveResourcesData()
     {
         return new List<ResourceDto>()
         {
-            CreateResourceDataToSave(_catchedResourceHandler.CurrentIronAmount),
-            CreateResourceDataToSave(_catchedResourceHandler.CurrentCrystalAmount),
-            CreateResourceDataToSave(_catchedResourceHandler.CurrentPlantAmount),
-            CreateResourceDataToSave(_catchedResourceHandler.CurrentAlienArtifactAmount)
+            new() { ResourceType = ResourceType.Iron, Count = _catchedResourceHandler.CurrentIronAmount },
+            new() { ResourceType = ResourceType.Crystal, Count = _catchedResourceHandler.CurrentCrystalAmount },
+            new() { ResourceType = ResourceType.Plant, Count = _catchedResourceHandler.CurrentPlantAmount },
+            new() { ResourceType = ResourceType.AlienArtifact, Count = _catchedResourceHandler.CurrentAlienArtifactAmount }
         };
-    }*/
-
-    private ResourceDto CreateResourceDataToSave(List<Resource> resources)
-    {
-        return new ResourceDto { Resources = resources };
     }
 }
 
 [Serializable]
-public class ResourceDto
+public struct ResourceDto
 {
-    public Resource ResourceType;
+    public ResourceType ResourceType;
     public int Count;
+}
+
+[Serializable]
+public struct ResourceListDto
+{
+    public List<ResourceDto> Resources;
+}
+
+public enum ResourceType
+{
+    Iron,
+    Crystal,
+    Plant,
+    AlienArtifact
 }

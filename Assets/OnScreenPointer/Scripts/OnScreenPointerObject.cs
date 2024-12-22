@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace OnScreenPointerPlugin
 {
@@ -13,6 +14,7 @@ namespace OnScreenPointerPlugin
         [SerializeField] private Sprite _outScreenSprite;
         [SerializeField] private Image _uiImagePrefab;
 
+        private Camera _playerCamera;
         private Vector2 _lockalOffset;
         private Image _uiImage;
         private bool _isPointerInScreen = false;
@@ -21,21 +23,34 @@ namespace OnScreenPointerPlugin
         private Vector2 _screenMidPoint;
         private Camera _localCamera;
 
+        [Inject]
+        private void Construct(Player player)
+        {
+            _playerCamera = player.GetComponentInChildren<Camera>();
+            AdjustPlayerCamera();
+        }
+
         private void Awake()
         {
             _uiImage = Instantiate(_uiImagePrefab);
             _uiImage.raycastTarget = false;
 
             _uiImage.rectTransform.SetParent(_pointerController.uiContainerOfPointers);
+        }
 
-            _screenSizeX = _pointerController.playerCamera.pixelWidth;
-            _screenSizeY = _pointerController.playerCamera.pixelHeight;
+        public void AdjustPlayerCamera()
+        {
+            _screenSizeX = _playerCamera.pixelWidth;
+            _screenSizeY = _playerCamera.pixelHeight;
             _screenMidPoint = new Vector2((int)_screenSizeX / 2, (int)_screenSizeY / 2);
-            _localCamera = _pointerController.playerCamera;
+            _localCamera = _playerCamera;
         }
         
         private void Update()
         {
+            if (_playerCamera == null)
+                return;
+
             var screenPos = MyScreenPosition(transform);
 
             _isPointerInScreen = IsPointerInScreen(screenPos);
@@ -98,7 +113,7 @@ namespace OnScreenPointerPlugin
 
         private Vector3 MyScreenPosition(Transform transform)
         {
-            var screenpos = _pointerController.playerCamera.WorldToScreenPoint(transform.position);
+            var screenpos = _playerCamera.WorldToScreenPoint(transform.position);
             return screenpos;
         }
 

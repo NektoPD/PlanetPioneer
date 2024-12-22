@@ -13,7 +13,7 @@ public class PlayerResourcesView : MonoBehaviour
     [SerializeField] private TMP_Text _maxIronAmount;
     [SerializeField] private TMP_Text _maxCrystalsAmount;
     [SerializeField] private TMP_Text _maxPlantAmount;
-    [SerializeField] private TMP_Text _maxAlienArtifacrtAmount;
+    [SerializeField] private TMP_Text _maxAlienArtifactAmount;
 
     private IResourceHandler _resourceHandler;
     private ICapacityHandler _capacityHandler;
@@ -35,7 +35,7 @@ public class PlayerResourcesView : MonoBehaviour
             { typeof(Iron), _maxIronAmount },
             { typeof(Crystal), _maxCrystalsAmount },
             { typeof(Plant), _maxPlantAmount },
-            { typeof(AlienArtifact), _maxAlienArtifacrtAmount }
+            { typeof(AlienArtifact), _maxAlienArtifactAmount }
         };
     }
     

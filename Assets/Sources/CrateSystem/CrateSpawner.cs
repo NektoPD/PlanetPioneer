@@ -8,6 +8,7 @@ public class CrateSpawner : ObjectPool<Crate>
     [SerializeField] private Transform _spawnPointPosition;
     [SerializeField] private BaseUpgrader _baseUpgrader;
     [SerializeField] private SoundPlayer _crateSpawnSound;
+    [SerializeField] private VideoAd _videoAdShower;
 
     private ParticleSpawner _particleSpawner;
 
@@ -21,11 +22,13 @@ public class CrateSpawner : ObjectPool<Crate>
     private void OnEnable()
     {
         _baseUpgrader.BaseUpgraded += SpawnCrate;
+        _videoAdShower.RewardedAdWatched += SpawnCrate;
     }
 
     private void OnDisable()
     {
         _baseUpgrader.BaseUpgraded -= SpawnCrate;
+        _videoAdShower.RewardedAdWatched -= SpawnCrate;
     }
     
     public void SpawnCrate()

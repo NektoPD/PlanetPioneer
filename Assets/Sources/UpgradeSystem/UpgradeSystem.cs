@@ -11,6 +11,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     [SerializeField] protected UIPopUpWindowShower _windowShower;
     [SerializeField] private SoundPlayer _upgradeSound;
     [SerializeField] private SoundPlayer _errorSound;
+    [SerializeField] private VideoAd _adSystem;
 
     private Player _player;
     private WeaponUpgrader _weaponUpgrader;
@@ -57,6 +58,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
         _upgradeSystemView.OnWeaponUpgradeButtonClicked += OnWeaponUpgradeButtonClicked;
         _upgradeSystemView.OnRocketUpgradeButtonClicked += OnRocketUpgradeButtonClicked;
         _upgradeSystemView.RocketUpgradeButtonEnabled += HandleRocketUpgradesAvailable;
+        _upgradeSystemView.WatchAdButtonClicked += HandleWatchAd;
     }
 
     private void OnDisable()
@@ -65,6 +67,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
         _upgradeSystemView.OnWeaponUpgradeButtonClicked -= OnWeaponUpgradeButtonClicked;
         _upgradeSystemView.OnRocketUpgradeButtonClicked -= OnRocketUpgradeButtonClicked;
         _upgradeSystemView.RocketUpgradeButtonEnabled -= HandleRocketUpgradesAvailable;
+        _upgradeSystemView.WatchAdButtonClicked -= HandleWatchAd;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -81,6 +84,11 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
         {
             PlayerSteppedOut?.Invoke();
         }
+    }
+
+    private void HandleWatchAd()
+    {
+        _adSystem.ShowRewarded();
     }
 
     private void OnBaseUpgradeButtonClicked()

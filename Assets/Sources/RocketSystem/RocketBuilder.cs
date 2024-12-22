@@ -8,10 +8,12 @@ public class RocketBuilder : MonoBehaviour
     private const string RocketIsFullyBuiltMessage = "Rocket is fully built.";
     private const string NoRocketUpgradesAvailableMessage = "No more parts available to upgrade.";
     private const int MaxParts = 5;
+    private const int SecondPart = 2;
 
     [SerializeField] private UIPopUpWindowShower _popUpWindowShower;
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private SoundPlayer _rocketBuidSound;
+    [SerializeField] private VideoAd _adSystem;
 
     private RocketPart[] _parts;
     private int _currentBuildParts = 0;
@@ -69,6 +71,11 @@ public class RocketBuilder : MonoBehaviour
             currentPart.gameObject.SetActive(true);
             _currentBuildParts++;
             OnePartUpgraded?.Invoke();
+
+            if (_currentBuildParts == SecondPart)
+            {
+                _adSystem.ShowInterstitial();
+            }
 
             if (_currentBuildParts == MaxParts)
             {

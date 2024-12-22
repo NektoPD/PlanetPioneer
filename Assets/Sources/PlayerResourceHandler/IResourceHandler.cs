@@ -6,11 +6,11 @@ using System.Collections.Generic;
         public event Action ResourceAmountChanged;
         public event Action ResourcesCleared;
         
-        /*public List<Resource> CurrentIronAmount { get; }
-        public List<Resource> CurrentCrystalAmount { get; }
-        public List<Resource> CurrentPlantAmount { get; }
-        public List<Resource> CurrentAlienArtifactAmount { get; }*/
+        public int CurrentIronAmount { get; }
+        public int CurrentCrystalAmount { get; }
+        public int CurrentPlantAmount { get; }
+        public int CurrentAlienArtifactAmount { get; }
         public IReadOnlyDictionary<Type, int> CurrentResourceCatched { get; }
         public Dictionary<Type, int> GetAllResources();
-        public void SetResourceAmount(Dictionary<Type, int> resources);
+        public void SetResourceAmount(Type resourceType, int amount);
     }

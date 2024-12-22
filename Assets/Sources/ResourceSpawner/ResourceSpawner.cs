@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceSpawner : ObjectPool<Resource>
 {
     private const string NoAvailableSpawnPointsErrorMessage = "No spawn points";
+    private const int CooldownBetweenSpawn = 5;
 
     [SerializeField] private Resource _prefab;
     [SerializeField] private int _spawnCount = 10;
@@ -15,7 +17,6 @@ public class ResourceSpawner : ObjectPool<Resource>
     private void Awake()
     {
         _spawnPoints.AddRange(GetComponentsInChildren<SpawnArea>());
-
         Initalize(_prefab);
     }
 
@@ -44,19 +45,35 @@ public class ResourceSpawner : ObjectPool<Resource>
 
         if (ActiveObjects.Count >= Capacity)
             return;
+        
+        StartCoroutine(SpawnWithCooldown());
 
+        
+    }
+
+    private IEnumerator SpawnWithCooldown()
+    {
         List<SpawnArea> availableSpawnPoints = new List<SpawnArea>(_spawnPoints);
+        int spawnRemaining = _spawnCount;
+        WaitForSeconds spawnInterval = new WaitForSeconds(CooldownBetweenSpawn);
 
-        for (int i = 0; i < _spawnCount; i++)
+        while (spawnRemaining > 0 && availableSpawnPoints.Count > 0)
         {
-            if (availableSpawnPoints.Count == 0)
-                return;
-
             int randomIndex = UnityEngine.Random.Range(0, availableSpawnPoints.Count);
             SpawnArea selectedSpawnArea = availableSpawnPoints[randomIndex];
             availableSpawnPoints.RemoveAt(randomIndex);
 
-            SpawnInArea(selectedSpawnArea);
+            int areaSpawnCount = Mathf.Min(spawnRemaining, 1);
+            for (int i = 0; i < areaSpawnCount; i++)
+            {
+                if (TryGetObject(out Resource resource, _prefab))
+                {
+                    selectedSpawnArea.SpawnResource(resource, PlanetPosition);
+                    spawnRemaining--;
+                }
+            }
+
+            yield return spawnInterval;
         }
     }
 
@@ -77,17 +94,5 @@ public class ResourceSpawner : ObjectPool<Resource>
             throw new ArgumentNullException(nameof(resource));
 
         PutObject(resource);
-    }
-
-    public Resource GetResource()
-    {
-        Resource resource = null;
-
-        if (TryGetObject(out resource, _prefab))
-        {
-            return resource;
-        }
-
-        return null;
     }
 }

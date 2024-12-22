@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,7 +14,7 @@ public class UIPopUpWindowShower : MonoBehaviour
     private Animator _animator;
 
     private CanvasGroup _canvas;
-    private Queue<string> _popupQueue = new Queue<string>();
+    private Queue<(string message, Action onMessageShown)> _popupQueue = new Queue<(string, Action)>();
     private Coroutine _popupCoroutine;
 
     private void Awake()
@@ -23,9 +24,9 @@ public class UIPopUpWindowShower : MonoBehaviour
         _canvas.alpha = 0;
     }
 
-    public void AddMessageToQueue(string message)
+    public void AddMessageToQueue(string message, Action onMessageShown = null)
     {
-        _popupQueue.Enqueue(Lean.Localization.LeanLocalization.GetTranslationText(message));
+        _popupQueue.Enqueue((Lean.Localization.LeanLocalization.GetTranslationText(message), onMessageShown));
 
         if(_popupCoroutine != null)
             return;
@@ -46,12 +47,13 @@ public class UIPopUpWindowShower : MonoBehaviour
 
         while (_popupQueue.Count > 0)
         {
-            string message = _popupQueue.Dequeue();
+            var (message, onMessageShown) = _popupQueue.Dequeue();
             ShowPopUp(message);
 
             yield return delay;
 
             _canvas.alpha = 0;
+            onMessageShown?.Invoke();
         }
 
         _popupCoroutine = null;
