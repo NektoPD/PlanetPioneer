@@ -6,8 +6,7 @@ public class UITutorialText : MonoBehaviour
 {
     [SerializeField] private SoundPlayer _textSound;
     [SerializeField] private TMP_Text _textBox;
-    
-    private string _text;
+
     private float _charDisplayInterval = 0.02f;
     private Coroutine _coroutine;
     private PlayerInput _playerInput;
@@ -19,24 +18,20 @@ public class UITutorialText : MonoBehaviour
 
     private void OnEnable()
     {
-        _text = _textBox.text;
-        _textBox.text = "";
         _playerInput.Enable();
-        _playerInput.Player.Skip.performed += ctx => SkipButtonPressed();
+        _coroutine = null;
     }
 
     private void OnDisable()
     {
-        _playerInput.Player.Skip.performed -= ctx => SkipButtonPressed();
         _playerInput.Disable();
     }
 
     public void StartDisplayText()
     {
         if (_coroutine != null)
-        {
-            StopCoroutine(_coroutine);
-        }
+            return;
+
         _coroutine = StartCoroutine(DisplayTextCoroutine());
     }
 
@@ -46,14 +41,14 @@ public class UITutorialText : MonoBehaviour
             return;
 
         StopCoroutine(_coroutine);
-        _coroutine = null;
 
-        _textBox.text = _text;
-        
         if (_textSound != null)
         {
             _textSound.StopPlayingSound();
         }
+
+        _textBox.maxVisibleCharacters = _textBox.text.Length;
+        _coroutine = null;
     }
 
     private IEnumerator DisplayTextCoroutine()
@@ -64,10 +59,12 @@ public class UITutorialText : MonoBehaviour
         {
             _textSound.PlaySound();
         }
+        
+        _textBox.maxVisibleCharacters = 0;
 
-        foreach (char c in _text)
+        for (int i = 0; i <= _textBox.text.Length; i++)
         {
-            _textBox.text += c;
+            _textBox.maxVisibleCharacters = i;
             yield return interval;
         }
 
@@ -81,6 +78,6 @@ public class UITutorialText : MonoBehaviour
 
     public bool DisplayedAllText()
     {
-        return _textBox.text == _text;
+        return _textBox.maxVisibleCharacters == _textBox.text.Length;
     }
 }

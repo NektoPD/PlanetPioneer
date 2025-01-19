@@ -34,7 +34,7 @@ public class PlayerUpgrader : MonoBehaviour, IPlayerUpgrader
         _baseUpgrader.LoadedBaseUpgrades -= ProcessUpgrade;
     }
 
-    public void ProcessUpgrade()
+    private void ProcessUpgrade()
     {
         if (_currentUpgradeLevel < MaxPossibleUpgrades)
         {

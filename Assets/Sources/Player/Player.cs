@@ -15,6 +15,7 @@ public class Player : MonoBehaviour,IResourceTaker
     [SerializeField] private ResourceCatcher _resourceCatcher;
     [SerializeField] private CatchedResourceHandler _resourceHandler;
     [SerializeField] private PlayerAnimator _animator;
+    [SerializeField] private Vector3 _startPosition;
     
     private UpgradeSystem _upgradeSystem;
     private PlayerCollisionHandler _collisionHandler;
@@ -83,12 +84,7 @@ public class Player : MonoBehaviour,IResourceTaker
         _weapon.SetResourceTaker(this);
         _mover.SetResourceGatherer(_weapon);
     }
-
-    public void ProcessGoldIncreaseAmount(int amount)
-    {
-        _goldHandler.SetGoldAmount(amount);
-    }
-
+    
     public void SetCurrentPosition(Vector3 position)
     {
         _transform.position = position;

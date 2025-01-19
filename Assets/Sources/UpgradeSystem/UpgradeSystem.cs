@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using YG;
 using Zenject;
 
 public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
@@ -11,7 +12,6 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     [SerializeField] protected UIPopUpWindowShower _windowShower;
     [SerializeField] private SoundPlayer _upgradeSound;
     [SerializeField] private SoundPlayer _errorSound;
-    [SerializeField] private VideoAd _adSystem;
 
     private Player _player;
     private WeaponUpgrader _weaponUpgrader;
@@ -88,7 +88,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
     private void HandleWatchAd()
     {
-        _adSystem.ShowRewarded();
+        YandexGame.RewVideoShow(0);
     }
 
     private void OnBaseUpgradeButtonClicked()
@@ -132,4 +132,35 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     {
         return upgradeCost * UpgradeMultiplier;
     }
+    
+    public void IncreaseSpecificUpgradeCost(UpgradeType upgradeType)
+    {
+        switch (upgradeType)
+        {
+            case UpgradeType.Weapon:
+                _weaponUpgradeCost = IncreaseUpgradeCost(_weaponUpgradeCost);
+                WeaponUpgradeCostChanged?.Invoke(_weaponUpgradeCost);
+                break;
+
+            case UpgradeType.Base:
+                _baseUpgradeCost = IncreaseUpgradeCost(_baseUpgradeCost);
+                BaseUpgradeCostChanged?.Invoke(_baseUpgradeCost);
+                break;
+
+            case UpgradeType.Rocket:
+                _rocketUpgradeCost = IncreaseUpgradeCost(_rocketUpgradeCost);
+                RocketUpgradeCostChanged?.Invoke(_rocketUpgradeCost);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(upgradeType), "Invalid upgrade type");
+        }
+    }
+}
+
+public enum UpgradeType
+{
+    Weapon,
+    Base,
+    Rocket
 }

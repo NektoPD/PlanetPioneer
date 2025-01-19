@@ -48,9 +48,14 @@ public class UpgradeSystemView : MonoBehaviour
         _pushToWatchAdButton.onClick.AddListener(HandleWatchAddButtonPushed);
 
         HideUpgradeWindow();
-        DisableButton(_upgradeRocketButton);
+        _upgradeRocketButton.gameObject.SetActive(false);
         _rocketUpgradeCost.enabled = false;
         _rocketUpgradeText.enabled = false;
+
+        foreach (var element in _rocketUpgradeSlots)
+        {
+            element.gameObject.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -109,15 +114,13 @@ public class UpgradeSystemView : MonoBehaviour
 
     private void DiactivateWeaponUpgradeButton() => _upgradeWeaponButton.enabled = false;
 
-    private void DisableButton(Button button) => button.gameObject.SetActive(false);
-
-    private void EnableButton(Button button) => button.gameObject.SetActive(true);
+    private void DisableButton(Button button) => button.interactable = false;
 
     private void UpgradeBaseSlots() => SetUpgradeSlotToActive(_baseUpgradeSlots);
 
     private void UpgradeWeaponSlots() => SetUpgradeSlotToActive(_weaponUpgradeSlots);
 
-    private void UpgradeRocketSlots() => SetUpgradeSlotToActive(_rocketUpgradeSlots);
+    public void UpgradeRocketSlots() => SetUpgradeSlotToActive(_rocketUpgradeSlots);
 
     private void ShowUpgradeWindow()
     {
@@ -142,11 +145,16 @@ public class UpgradeSystemView : MonoBehaviour
         _baseUpgradeCost.enabled = false;
         _baseUpgradeText.enabled = false;
         
-        EnableButton(_upgradeRocketButton);
+        _upgradeRocketButton.gameObject.SetActive(true);
         _rocketUpgradeCost.enabled = true;
         _rocketUpgradeText.enabled = true;
         
         RocketUpgradeButtonEnabled?.Invoke();
+        
+        foreach (var element in _rocketUpgradeSlots)
+        {
+            element.gameObject.SetActive(true);
+        }
     }
 
     private void SetUpgradeSlotToActive(UIUpgradeImageSlot[] slots)

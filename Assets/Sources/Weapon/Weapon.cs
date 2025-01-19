@@ -46,6 +46,15 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
         _shootButton.onClick.AddListener(OnShootButtonPressed);
     }
 
+    private void OnDisable()
+    {
+        _playerInput.Disable();
+        _resourceCatcher.StartedGatheringResources -= ProcessResourceGatherStart;
+        _resourceCatcher.StoppedGatheringResources -= ProcessResourceGatherEnd;
+        _upgradeSystem.WeaponUpgraded -= _upgrader.UpgradeWeapon;
+        _shootButton.onClick.RemoveListener(OnShootButtonPressed);
+    }
+
     private void Start()
     {
         _resourceCatcher.SetShooter(this);
@@ -59,15 +68,6 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
         _resourceView.SetCapacityHandler(_resourceCatcherHandler);
         
         _playerInput.Player.Gather.performed += ctx => ShootButtonPressed?.Invoke();
-    }
-
-    private void OnDisable()
-    {
-        _playerInput.Disable();
-        _resourceCatcher.StartedGatheringResources -= ProcessResourceGatherStart;
-        _resourceCatcher.StoppedGatheringResources -= ProcessResourceGatherEnd;
-        _upgradeSystem.WeaponUpgraded -= _upgrader.UpgradeWeapon;
-        _shootButton.onClick.RemoveListener(OnShootButtonPressed);
     }
 
     public void SetUpgradeSystem(IUpgradeSystem upgradeSystem)

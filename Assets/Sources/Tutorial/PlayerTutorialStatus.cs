@@ -9,12 +9,12 @@ public class PlayerTutorialStatus : MonoBehaviour
 
     private bool _isTutorialViewed;
 
+    public event Action TutorialCompleted;
+    
     public bool IsTutorialCompleted => _isTutorialViewed;
-
+    
     private void OnEnable()
     {
-        LoadTutorialStatus();
-
         _tutorialWindow.TutorialViewed += CompleteTutorial;
     }
 
@@ -23,9 +23,15 @@ public class PlayerTutorialStatus : MonoBehaviour
         _tutorialWindow.TutorialViewed -= CompleteTutorial;
     }
 
+    private void Start()
+    {
+        LoadTutorialStatus();
+    }
+
     private void CompleteTutorial()
     {
         _isTutorialViewed = true;
+        TutorialCompleted?.Invoke();
         SaveTutorialStatus();
     }
 
@@ -40,6 +46,11 @@ public class PlayerTutorialStatus : MonoBehaviour
         if (PlayerPrefs.HasKey(TutorialStatusKey))
         {
             _isTutorialViewed = PlayerPrefs.GetInt(TutorialStatusKey) == 1;
+
+            if (_isTutorialViewed)
+            {
+                TutorialCompleted?.Invoke();
+            }
         }
     }
 }

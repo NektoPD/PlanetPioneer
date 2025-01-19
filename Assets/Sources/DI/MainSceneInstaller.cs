@@ -1,4 +1,5 @@
 using UnityEngine;
+using YG;
 using Zenject;
 
 public class MainSceneInstaller : MonoInstaller
@@ -14,6 +15,7 @@ public class MainSceneInstaller : MonoInstaller
         BindUIServices();
         BindPlanetServices();
         BindPlayer();
+        YandexGame.GameplayStart();
     }
 
     private void BindSaveSystem()

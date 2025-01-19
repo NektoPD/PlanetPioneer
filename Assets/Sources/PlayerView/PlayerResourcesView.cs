@@ -38,7 +38,7 @@ public class PlayerResourcesView : MonoBehaviour
             { typeof(AlienArtifact), _maxAlienArtifactAmount }
         };
     }
-    
+
     private void OnDisable()
     {
         _resourceHandler.ResourceAmountChanged -= UpgradeResourceAmount;
@@ -51,6 +51,7 @@ public class PlayerResourcesView : MonoBehaviour
             throw new ArgumentNullException(nameof(resourceHandler));
 
         _resourceHandler = resourceHandler;
+        UpgradeResourceAmount();
         _resourceHandler.ResourceAmountChanged += UpgradeResourceAmount;
     }
     

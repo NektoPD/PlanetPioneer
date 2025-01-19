@@ -26,12 +26,12 @@ public class PlayerToBasePointerView : MonoBehaviour
         _player.ResourceRemovedFromBag -= DiactivatePointer;
     }
 
-    public void DiactivatePointer()
+    private void DiactivatePointer()
     {
         gameObject.SetActive(false);
     }
 
-    public void ActivatePointer()
+    private void ActivatePointer()
     {
         gameObject.SetActive(true);
     }

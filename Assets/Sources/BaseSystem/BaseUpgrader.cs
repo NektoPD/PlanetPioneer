@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
+using YG;
 
 public class BaseUpgrader : MonoBehaviour
 {
     private const string BaseFullyUpgradedMessage = "Base is already fully upgraded.";
     private const string NoMoreAvailableUnitsMessage = "No more units available to upgrade.";
     private const string BaseUnitUpgradedMessage = "Base Unit upgraded";
-    private const int FirstAddShowIntValue = 2;
-    
+
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private UIPopUpWindowShower _windowShower;
-    [SerializeField] private VideoAd _adSystem;
+    [SerializeField] private BaseUnit[] _baseUnits;
 
-    private BaseUnit[] _baseUnits;
     private int _currentUpgrades;
     private int _maximumUpgrades;
 
@@ -25,7 +24,11 @@ public class BaseUpgrader : MonoBehaviour
 
     private void Awake()
     {
-        _baseUnits = GetComponentsInChildren<BaseUnit>();
+        foreach (var unit in _baseUnits)
+        {
+            unit.gameObject.SetActive(false);
+        }
+        
         _maximumUpgrades = _baseUnits.Length;
         _currentUpgrades = 0;
     }
@@ -40,11 +43,17 @@ public class BaseUpgrader : MonoBehaviour
         _upgradeSystem.BaseUpgraded -= UpgradeOneUnit;
     }
 
-    private void Start()
+    public void SetCurrentUpgrades(int currentUpgrades)
     {
-        foreach (var unit in _baseUnits)
+        if (currentUpgrades > _maximumUpgrades || currentUpgrades < 0)
+            throw new ArgumentOutOfRangeException(nameof(currentUpgrades));
+
+        _currentUpgrades = currentUpgrades;
+        UpdateUnitsState();
+
+        if (_currentUpgrades >= _maximumUpgrades)
         {
-            unit.gameObject.SetActive(false);
+            BaseFullyUpgraded?.Invoke();
         }
     }
 
@@ -66,17 +75,13 @@ public class BaseUpgrader : MonoBehaviour
 
             _windowShower.AddMessageToQueue(BaseUnitUpgradedMessage);
 
-            if (_currentUpgrades == FirstAddShowIntValue)
-            {
-                _adSystem.ShowInterstitial();
-            }
-
             if (_currentUpgrades >= _maximumUpgrades)
             {
                 _windowShower.AddMessageToQueue(BaseFullyUpgradedMessage);
                 BaseFullyUpgraded?.Invoke();
-                _adSystem.ShowInterstitial();
             }
+
+            YandexGame.FullscreenShow();
         }
         else
         {
@@ -84,35 +89,20 @@ public class BaseUpgrader : MonoBehaviour
         }
     }
 
-    public void SetCurrentUpgrades(int currentUpgrades)
+    private void UpdateUnitsState()
     {
-        if (currentUpgrades > _maximumUpgrades || currentUpgrades < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(currentUpgrades));
-        }
-
-        UpdateUnitsState(currentUpgrades);
-        
-        if (_currentUpgrades != currentUpgrades)
-            _currentUpgrades = currentUpgrades;
-        
-        if (_currentUpgrades >= _maximumUpgrades)
-        {
-            BaseFullyUpgraded?.Invoke();
-        }
-    }
-
-    private void UpdateUnitsState(int currentUpgrades)
-    {
-        for (int i = _currentUpgrades; i < currentUpgrades; i++)
+        for (int i = 0; i < _currentUpgrades; i++)
         {
             BaseUnit currentUnit = _baseUnits.FirstOrDefault(unit => !unit.gameObject.activeSelf);
 
             if (currentUnit == null)
-                return;
+            {
+                throw new ArgumentNullException(nameof(currentUnit));
+            }
 
             currentUnit.gameObject.SetActive(true);
             LoadedBaseUpgrades?.Invoke();
+            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Base);
         }
     }
 }

@@ -6,7 +6,7 @@ public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 {
     private const string MaximumGoldAmounReachedErrorMessage = "Maximum gold amount reached";
     private const string NotEnoughGoldToDecreaseErrorrMessage = "Not enough gold to decrease by the specified amount";
-
+    
     private UIPopUpWindowShower _windowShower;
 
     private int _goldMultiplier = 1;
@@ -34,7 +34,7 @@ public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 
         _goldAmount += _goldMultiplier;
         GoldAmountChanged?.Invoke(_goldAmount);
-        AmountChanged.Invoke();
+        AmountChanged?.Invoke();
     }
 
     public void DecreaceGoldAmount(int amount)
@@ -50,7 +50,7 @@ public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 
         _goldAmount -= amount;
         GoldAmountChanged?.Invoke(_goldAmount);
-        AmountChanged.Invoke();
+        AmountChanged?.Invoke();
     }
 
     public void SetGoldAmount(int amount)

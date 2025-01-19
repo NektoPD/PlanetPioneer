@@ -1,11 +1,12 @@
 using System;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class TutorialWindow : MonoBehaviour
 {
-    [SerializeField] private TMP_Text _skipTutorialText;
-    [SerializeField] private TMP_Text _startNextTutorialText;
+    // [SerializeField] private Button _skipTutorialText;
+    [SerializeField] private Button _startNextTutorialText;
     [SerializeField] private PlayerTutorialStatus _playerTutorialStatus;
 
     private UITutorialText[] _textBoxes;
@@ -17,43 +18,36 @@ public class TutorialWindow : MonoBehaviour
     private void Awake()
     {
         InitializeComponents();
+        DeactivateAllTextBoxes();
         _playerInput = new PlayerInput();
     }
 
     private void OnEnable()
     {
         _playerInput.Enable();
-        _playerInput.Player.Skip.performed += ctx => OnSkipButtonPressed();
+        //_playerInput.Player.Skip.performed += _ => OnSkipButtonPressed();
+        
+        _startNextTutorialText.onClick.AddListener(OnSkipButtonPressed);
     }
 
     private void OnDisable()
     {
         _playerInput.Disable();
-        _playerInput.Player.Skip.performed -= ctx => OnSkipButtonPressed();
+       // _playerInput.Player.Skip.performed -= _ => OnSkipButtonPressed();
+       
+       _startNextTutorialText.onClick.RemoveListener(OnSkipButtonPressed);
     }
 
     private void Start()
     {
-        Debug.Log(_playerTutorialStatus.IsTutorialCompleted);
-        
-        if(_playerTutorialStatus.IsTutorialCompleted){}
-            gameObject.SetActive(false);
-        
-        DeactivateAllTextBoxes();
-        ActivateCurrentTextBox();
-        _startNextTutorialText.enabled = false;
-    }
-
-    private void Update()
-    {
-        if (!IsValidCurrentTutorialWindow())
+        if (!_playerTutorialStatus.IsTutorialCompleted)
         {
-            return;
+            ActivateCurrentTextBox();
+            _startNextTutorialText.gameObject.SetActive(true);
         }
-
-        if (_textBoxes[_currentTutorialWindow].DisplayedAllText())
+        else
         {
-            HandleTutorialTextDisplayed();
+            gameObject.SetActive(false);
         }
     }
 
@@ -77,6 +71,8 @@ public class TutorialWindow : MonoBehaviour
         {
             _textBoxes[_currentTutorialWindow].gameObject.SetActive(true);
             _textBoxes[_currentTutorialWindow].StartDisplayText();
+           // _skipTutorialText.gameObject.SetActive(true);
+            
         }
     }
 
@@ -87,15 +83,15 @@ public class TutorialWindow : MonoBehaviour
 
     private void HandleTutorialTextDisplayed()
     {
-        _skipTutorialText.enabled = false;
-        _startNextTutorialText.enabled = true;
+       // _skipTutorialText.gameObject.SetActive(false);
+        //_startNextTutorialText.gameObject.SetActive(true);
     }
 
     private void OnSkipButtonPressed()
     {
-        if (_textBoxes[_currentTutorialWindow].DisplayedAllText() == false)
-            return;
-        
+        /*if (_textBoxes[_currentTutorialWindow].DisplayedAllText() == false)
+            return;*/
+
         ProceedToNextTutorialWindow();
     }
 
@@ -112,8 +108,8 @@ public class TutorialWindow : MonoBehaviour
         else
         {
             ActivateCurrentTextBox();
-            _skipTutorialText.enabled = true;
-            _startNextTutorialText.enabled = false;
+           // _skipTutorialText.gameObject.SetActive(true);
+           // _startNextTutorialText.gameObject.SetActive(false);
         }
     }
 }

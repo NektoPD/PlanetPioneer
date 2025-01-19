@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using YG;
 
 [RequireComponent(typeof(Collider))]
 public class RocketBuilder : MonoBehaviour
@@ -13,7 +14,7 @@ public class RocketBuilder : MonoBehaviour
     [SerializeField] private UIPopUpWindowShower _popUpWindowShower;
     [SerializeField] private UpgradeSystem _upgradeSystem;
     [SerializeField] private SoundPlayer _rocketBuidSound;
-    [SerializeField] private VideoAd _adSystem;
+    [SerializeField] private UpgradeSystemView _upgradeSystemView;
 
     private RocketPart[] _parts;
     private int _currentBuildParts = 0;
@@ -29,6 +30,11 @@ public class RocketBuilder : MonoBehaviour
     {
         _parts = GetComponentsInChildren<RocketPart>();
         _collider = GetComponent<Collider>();
+        
+        foreach (RocketPart part in _parts)
+        {
+            part.gameObject.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -45,11 +51,6 @@ public class RocketBuilder : MonoBehaviour
 
     private void Start()
     {
-        foreach (RocketPart part in _parts)
-        {
-            part.gameObject.SetActive(false);
-        }
-
         Collider collider = GetComponent<Collider>();
         collider.enabled = false;
 
@@ -72,11 +73,6 @@ public class RocketBuilder : MonoBehaviour
             _currentBuildParts++;
             OnePartUpgraded?.Invoke();
 
-            if (_currentBuildParts == SecondPart)
-            {
-                _adSystem.ShowInterstitial();
-            }
-
             if (_currentBuildParts == MaxParts)
             {
                 _isRocketFullyBuilt = true;
@@ -84,6 +80,8 @@ public class RocketBuilder : MonoBehaviour
                 _rocketBuidSound.PlaySound();
                 RocketReady?.Invoke();
             }
+
+            YandexGame.FullscreenShow();
         }
         else
         {
@@ -110,7 +108,14 @@ public class RocketBuilder : MonoBehaviour
 
         for(int i = 0; i < _currentBuildParts; i++)
         {
-            OnePartUpgraded?.Invoke();
+            RocketPart currentPart = _parts.FirstOrDefault(part => !part.gameObject.activeSelf);
+
+            if (currentPart != null)
+            {
+                currentPart.gameObject.SetActive(true);
+                _upgradeSystemView.UpgradeRocketSlots();
+                _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Rocket);
+            }
         }
 
         if (_currentBuildParts == MaxParts)

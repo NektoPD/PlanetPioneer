@@ -2,6 +2,7 @@ using System;
 using Agava.YandexGames;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
 
 [RequireComponent(typeof(SceneTransitioner))]
 public class MainMenu : MonoBehaviour
@@ -14,30 +15,41 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Image _settingsPanel;
     [SerializeField] private Button _backButton;
     [SerializeField] private Button _leaderboardButton;
+    [SerializeField] private GameObject _leaderboard;
 
     private SceneTransitioner _sceneTransitioner;
-
-    public event Action LeaderboardButtonClicked;
     
     private void Awake()
     {
         _sceneTransitioner = GetComponent<SceneTransitioner>();
     }
 
-    private void Start()
+    private void OnEnable()
     {
         _gameButton.onClick.AddListener(StarGameScene);
         _settingButton.onClick.AddListener(ProcessSettingsButtonClick);
         _leaderboardButton.onClick.AddListener(ProcessLeaderBoardButtonClick);
+        YandexGame.GameplayStart();
+    }
+
+    private void OnDisable()
+    {
+        _gameButton.onClick.RemoveListener(StarGameScene);
+        _settingButton.onClick.RemoveListener(ProcessSettingsButtonClick);
+        _leaderboardButton.onClick.RemoveListener(ProcessLeaderBoardButtonClick);
+    }
+
+    private void Start()
+    {
         _loadingScreen.gameObject.SetActive(false);
         _settingsPanel.gameObject.SetActive(false);
+        ProcessLeaderBoardButtonClick();
     }
 
     private void StarGameScene()
     {
         _loadingScreen.gameObject.SetActive(true);
         _sceneTransitioner.SwitchScene(MainGameSceneName);
-        SetYandexSDKReady();
     }
     
     private void ProcessSettingsButtonClick()
@@ -50,7 +62,7 @@ public class MainMenu : MonoBehaviour
     
     private void ProcessLeaderBoardButtonClick()
     {
-        LeaderboardButtonClicked?.Invoke();
+        ToggleLeaderboard(!_leaderboard.activeSelf);
     }
 
     private void ProcessOnBackButtonCLick()
@@ -60,9 +72,9 @@ public class MainMenu : MonoBehaviour
         _backButton.onClick.RemoveListener(ProcessOnBackButtonCLick);
         _settingsPanel.gameObject.SetActive(false);
     }
-
-    private void SetYandexSDKReady()
+    
+    private void ToggleLeaderboard(bool status)
     {
-        YandexGamesSdk.GameReady();
+        _leaderboard.SetActive(status);
     }
 }

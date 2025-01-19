@@ -35,6 +35,14 @@ public class Crate : MonoBehaviour
         }
     }
 
+    public void SetGoldSpawner(GoldSpawner goldSpawner)
+    {
+        if (goldSpawner == null)
+            throw new ArgumentNullException(nameof(goldSpawner));
+
+        _goldSpawner = goldSpawner;
+    }
+
     private void SpawnGold()
     {
         _animator.ActivateOpenTrigger();
@@ -45,13 +53,5 @@ public class Crate : MonoBehaviour
             goldToSpawn.gameObject.SetActive(true);
             goldToSpawn.transform.position = _spawnAreaPoints[i].position;
         }
-    }
-
-    public void SetGoldSpawner(GoldSpawner goldSpawner)
-    {
-        if (goldSpawner == null)
-            throw new ArgumentNullException(nameof(goldSpawner));
-
-        _goldSpawner = goldSpawner;
     }
 }

@@ -23,11 +23,11 @@ public class UISliderShower : MonoBehaviour
 
     public void ActivateSlider(float speed)
     {
-        if (_coroutine != null)
-            return;
-
-        _canvasGroup.alpha = _canvasAlphaVisible;
-        _coroutine = StartCoroutine(ChangeSliderValue(speed));
+        if (_coroutine == null)
+        {
+            _canvasGroup.alpha = _canvasAlphaVisible;
+            _coroutine = StartCoroutine(ChangeSliderValue(speed));
+        }
     }
 
     private IEnumerator ChangeSliderValue(float duration)

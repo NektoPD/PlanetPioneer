@@ -513,6 +513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _goldAmount: {fileID: 7775520275711053180}
+  _playerGoldHandler: {fileID: 4938195841072485897}
 --- !u!1 &410480403265336196
 GameObject:
   m_ObjectHideFlags: 0
@@ -4108,6 +4109,7 @@ MonoBehaviour:
   _resourceCatcher: {fileID: 1566309292912090875}
   _resourceHandler: {fileID: 4617125529192521972}
   _animator: {fileID: 6865506326467339934}
+  _startPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &7110751643040284363
 MonoBehaviour:
   m_ObjectHideFlags: 0

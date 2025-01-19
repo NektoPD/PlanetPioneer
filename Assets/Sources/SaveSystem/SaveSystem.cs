@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using Zenject;
 
 public class SaveSystem : ISaveSystem
 {
-    private const string WeaponLevelKey = "WeaponLevel";
-    private const string BaseUpgradesLeftKey = "BaseLevel";
-    private const string RocketLevelKey = "RocketLevel";
-    private const string GoldAmountKey = "GoldAmount";
-    private const string PlayerXPositionKey = "XPosition";
-    private const string PlayerYPositionKey = "YPosition";
-    private const string PlayerZPositionKey = "ZPosition";
-    private const string PlayerTimerValue = "Timer";
+    private const string SaveKey = "SaveData";
 
     private BaseUpgrader _baseUpgrader;
     private RocketBuilder _rocketBuilder;
@@ -22,7 +14,6 @@ public class SaveSystem : ISaveSystem
     private IGoldHandler _goldHandler;
     private Player _player;
     private ScoreSystem _scoreSystem;
-    private string _filePath = Application.persistentDataPath + "/Save.json";
 
     [Inject]
     private void Construct(Player player, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader,
@@ -40,56 +31,20 @@ public class SaveSystem : ISaveSystem
 
     public void LoadProgress()
     {
-        LoadPlayerPrefs();
-        LoadResourcesFromJson();
-    }
-
-    public void SaveProgress()
-    {
-        SavePlayerPrefs();
-        SaveResourcesToJson();
-    }
-
-    private void SavePlayerPrefs()
-    {
-        PlayerPrefs.SetInt(WeaponLevelKey, _weaponUpgrader.CurrentLevel);
-        PlayerPrefs.SetInt(BaseUpgradesLeftKey, _baseUpgrader.RemainingUpgrades);
-        PlayerPrefs.SetInt(RocketLevelKey, _rocketBuilder.CurrentBuildParts);
-        PlayerPrefs.SetInt(GoldAmountKey, _goldHandler.GoldAmount);
-        PlayerPrefs.SetFloat(PlayerXPositionKey, _player.CurrentXPosition);
-        PlayerPrefs.SetFloat(PlayerYPositionKey, _player.CurrentYPosition);
-        PlayerPrefs.SetFloat(PlayerZPositionKey, _player.CurrentZPosition);
-        PlayerPrefs.SetFloat(PlayerTimerValue, _scoreSystem.Timer);
-        PlayerPrefs.Save();
-    }
-
-    private void SaveResourcesToJson()
-    {
-        var resourceDtos = GetSaveResourcesData();
-        var resourceListDto = new ResourceListDto { Resources = resourceDtos };
-
-        try
-        {
-            string json = JsonUtility.ToJson(resourceListDto, true);
-            File.WriteAllText(_filePath, json);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Failed to save resources: {ex.Message}");
-        }
-    }
-
-    private void LoadResourcesFromJson()
-    {
-        if (!File.Exists(_filePath))
+        if (!PlayerPrefs.HasKey(SaveKey))
             return;
 
         try
         {
-            string json = File.ReadAllText(_filePath);
-            var resourceListDto = JsonUtility.FromJson<ResourceListDto>(json);
+            string json = PlayerPrefs.GetString(SaveKey);
+            var saveData = JsonUtility.FromJson<SaveData>(json);
 
-            foreach (var resource in resourceListDto.Resources)
+            _goldHandler.SetGoldAmount(saveData.GoldAmount);
+            _player.SetCurrentPosition(new Vector3(saveData.PlayerXPosition, saveData.PlayerYPosition,
+                saveData.PlayerZPosition));
+            _scoreSystem.SetTimer(saveData.Timer);
+
+            foreach (var resource in saveData.Resources)
             {
                 switch (resource.ResourceType)
                 {
@@ -107,83 +62,80 @@ public class SaveSystem : ISaveSystem
                         break;
                 }
             }
+
+            _baseUpgrader.SetCurrentUpgrades(saveData.BaseUpgradesLeft);
+            _rocketBuilder.SetCurrenBuildParts(saveData.RocketLevel);
+            _weaponUpgrader.SetCurrentLevel(saveData.WeaponLevel);
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to load resources: {ex.Message}");
+            throw new ArgumentException(nameof(ex.Message));
         }
     }
 
-    private void LoadPlayerPrefs()
+    public void SaveProgress()
     {
-        LoadWeaponUpgrade();
-        LoadBaseUpgrade();
-        LoadRocketLevel();
-        LoadGoldAmount();
-        LoadPlayerPosition();
-        LoadTimerValue();
-    }
-
-    private void LoadTimerValue()
-    {
-        if(PlayerPrefs.HasKey(PlayerTimerValue))
-            _scoreSystem.SetTimer(PlayerPrefs.GetFloat(PlayerTimerValue));
-    }
-
-    private void LoadPlayerPosition()
-    {
-        if (PlayerPrefs.HasKey(PlayerXPositionKey) && PlayerPrefs.HasKey(PlayerYPositionKey) &&
-            PlayerPrefs.HasKey(PlayerZPositionKey))
+        var saveData = new SaveData
         {
-            float x = PlayerPrefs.GetFloat(PlayerXPositionKey);
-            float y = PlayerPrefs.GetFloat(PlayerYPositionKey);
-            float z = PlayerPrefs.GetFloat(PlayerZPositionKey);
-            _player.SetCurrentPosition(new Vector3(x, y, z));
+            WeaponLevel = _weaponUpgrader.CurrentLevel,
+            BaseUpgradesLeft = _baseUpgrader.RemainingUpgrades,
+            RocketLevel = _rocketBuilder.CurrentBuildParts,
+            GoldAmount = _goldHandler.GoldAmount,
+            PlayerXPosition = _player.CurrentXPosition,
+            PlayerYPosition = _player.CurrentYPosition,
+            PlayerZPosition = _player.CurrentZPosition,
+            Timer = _scoreSystem.Timer,
+            Resources = GetSaveResourcesData()
+        };
+
+        try
+        {
+            string json = JsonUtility.ToJson(saveData, true);
+            PlayerPrefs.SetString(SaveKey, json);
+            PlayerPrefs.Save();
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException(nameof(ex.Message));
         }
     }
 
-    private void LoadWeaponUpgrade()
+    public void ResetData()
     {
-        if (PlayerPrefs.HasKey(WeaponLevelKey))
+        if (PlayerPrefs.HasKey(SaveKey))
         {
-            _weaponUpgrader.SetCurrentLevel(PlayerPrefs.GetInt(WeaponLevelKey));
-        }
-    }
-
-    private void LoadBaseUpgrade()
-    {
-        if (PlayerPrefs.HasKey(BaseUpgradesLeftKey))
-        {
-            _baseUpgrader.SetCurrentUpgrades(PlayerPrefs.GetInt(BaseUpgradesLeftKey));
-        }
-    }
-
-    private void LoadRocketLevel()
-    {
-        if (PlayerPrefs.HasKey(RocketLevelKey))
-        {
-            _rocketBuilder.SetCurrenBuildParts(PlayerPrefs.GetInt(RocketLevelKey));
-        }
-    }
-
-    private void LoadGoldAmount()
-    {
-        if (PlayerPrefs.HasKey(GoldAmountKey))
-        {
-            _goldHandler.SetGoldAmount(PlayerPrefs.GetInt(GoldAmountKey));
+            PlayerPrefs.DeleteKey(SaveKey);
         }
     }
 
     private List<ResourceDto> GetSaveResourcesData()
     {
-        return new List<ResourceDto>()
+        return new List<ResourceDto>
         {
-            new() { ResourceType = ResourceType.Iron, Count = _catchedResourceHandler.CurrentIronAmount },
-            new() { ResourceType = ResourceType.Crystal, Count = _catchedResourceHandler.CurrentCrystalAmount },
-            new() { ResourceType = ResourceType.Plant, Count = _catchedResourceHandler.CurrentPlantAmount },
-            new() { ResourceType = ResourceType.AlienArtifact, Count = _catchedResourceHandler.CurrentAlienArtifactAmount }
+            new ResourceDto { ResourceType = ResourceType.Iron, Count = _catchedResourceHandler.CurrentIronAmount },
+            new ResourceDto
+                { ResourceType = ResourceType.Crystal, Count = _catchedResourceHandler.CurrentCrystalAmount },
+            new ResourceDto { ResourceType = ResourceType.Plant, Count = _catchedResourceHandler.CurrentPlantAmount },
+            new ResourceDto
+            {
+                ResourceType = ResourceType.AlienArtifact, Count = _catchedResourceHandler.CurrentAlienArtifactAmount
+            }
         };
     }
+}
+
+[Serializable]
+public class SaveData
+{
+    public int WeaponLevel;
+    public int BaseUpgradesLeft;
+    public int RocketLevel;
+    public int GoldAmount;
+    public float PlayerXPosition;
+    public float PlayerYPosition;
+    public float PlayerZPosition;
+    public float Timer;
+    public List<ResourceDto> Resources = new List<ResourceDto>();
 }
 
 [Serializable]
@@ -193,12 +145,6 @@ public struct ResourceDto
     public int Count;
 }
 
-[Serializable]
-public struct ResourceListDto
-{
-    public List<ResourceDto> Resources;
-}
-
 public enum ResourceType
 {
     Iron,
@@ -206,3 +152,4 @@ public enum ResourceType
     Plant,
     AlienArtifact
 }
+

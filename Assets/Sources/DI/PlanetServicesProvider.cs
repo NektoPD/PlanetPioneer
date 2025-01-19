@@ -17,5 +17,4 @@ public class PlanetServicesProvider : MonoInstaller
     public BaseUpgrader BaseUpgrader => _baseUpgrader;
     public RocketBuilder RocketBuilder => _rocketBuilder;
     public BaseSellingSystem BaseSellingSystem => _baseSellingSystem;
-    
 }

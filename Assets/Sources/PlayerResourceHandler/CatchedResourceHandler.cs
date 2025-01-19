@@ -87,6 +87,22 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler, IResource
         return new Dictionary<Type, int>(_resources);
     }
 
+    public void SetResourceAmount(Type resourceType, int count)
+    {
+        if (resourceType == null)
+            throw new ArgumentNullException(nameof(resourceType));
+
+        if (count <= 0)
+        {
+            _resources[resourceType] = 0;
+            return;
+        }
+        
+        _resources[resourceType] = count;
+        ResourceAdded?.Invoke();
+        ResourceAmountChanged?.Invoke();
+    }
+
     private void AddResource(Resource resource)
     {
         if (resource == null)
@@ -117,21 +133,5 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler, IResource
         _maxCapacityConstraints[typeof(Plant)] = _upgradedMaxPlantCapacity;
         _maxCapacityConstraints[typeof(AlienArtifact)] = _upgradedAlienArtifactCapacity;
         MaxCapacityUpdated?.Invoke();
-    }
-
-    public void SetResourceAmount(Type resourceType, int count)
-    {
-        if (resourceType == null)
-            throw new ArgumentNullException(nameof(resourceType));
-
-        if (count <= 0)
-        {
-            _resources[resourceType] = 0;
-            return;
-        }
-        
-        _resources[resourceType] = count;
-        ResourceAdded?.Invoke();
-        ResourceAmountChanged?.Invoke();
     }
 }

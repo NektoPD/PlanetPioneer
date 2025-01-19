@@ -57,16 +57,6 @@ public class PlayerMover : MonoBehaviour
         HandleMovement();
     }
 
-    public void EnableMovement()
-    {
-        _playerInput.Enable();
-    }
-
-    public void DisableMovement()
-    {
-        _playerInput.Disable();
-    }
-
     public void SetPlayerUpgrader(IPlayerUpgrader upgrader)
     {
         if (upgrader == null)
@@ -84,6 +74,16 @@ public class PlayerMover : MonoBehaviour
         _resourceGatherer = resourceGatherer;
         _resourceGatherer.StartedGatheringResources += DisableMovement;
         _resourceGatherer.StopedGatheringResources += EnableMovement;
+    }
+
+    private void EnableMovement()
+    {
+        _playerInput.Enable();
+    }
+
+    private void DisableMovement()
+    {
+        _playerInput.Disable();
     }
 
     private void HandleMovement()

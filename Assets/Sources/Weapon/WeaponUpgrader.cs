@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
+using YG;
 using Zenject;
 
-public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
+public class WeaponUpgrader : MonoBehaviour, IWeaponUpgrader
 {
     private const string WeaponSecondUpgradeMessage = "Weapon upgraded, you can now collect Crystals";
     private const string WeaponThirdUpgradeMessage = "Weapon upgraded, you can now collect Plant";
@@ -14,9 +15,8 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
     private const int WeaponThirdLevel = 3;
     private const int WeaponEndLevel = 4;
 
-    [SerializeField] private VideoAd _adSystem;
-    
     private UIPopUpWindowShower _windowShower;
+    private UpgradeSystem _upgradeSystem;
     private int _currentLevel = 1;
 
     public event Action WeaponUpgraded;
@@ -31,9 +31,10 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
     public int CurrentLevel => _currentLevel;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices)
+    private void Construct(UIServicesProvider UIServices, PlanetServicesProvider planetServicesProvider)
     {
         _windowShower = UIServices.PopUpWindow;
+        _upgradeSystem = planetServicesProvider.UpgradeSystem;
     }
 
     private void Start()
@@ -41,7 +42,7 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
         _currentLevel = WeaponStartLevel;
     }
 
-    public void UpgradeWeapon() //Передать через zenject upgradesystem и weaponupgrader сам будет подписываться на событие?
+    public void UpgradeWeapon()
     {
         if (_currentLevel < WeaponEndLevel)
         {
@@ -50,17 +51,13 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
 
             ShowUpgradeMessage();
 
-            if (_currentLevel == WeaponSecondLevel)
-            {
-                _adSystem.ShowInterstitial();
-            }
-            
             if (_currentLevel >= WeaponEndLevel)
             {
                 WeaponFullyUpgraded?.Invoke();
                 _windowShower.AddMessageToQueue(WeaponFullyUpgradedMessage);
-                _adSystem.ShowInterstitial();
             }
+
+            YandexGame.FullscreenShow();
         }
     }
 
@@ -87,15 +84,12 @@ public class WeaponUpgrader : MonoBehaviour,IWeaponUpgrader
         if (_currentLevel > WeaponEndLevel || _currentLevel < WeaponStartLevel)
             throw new ArgumentOutOfRangeException(nameof(level));
         
-        for (int i = _currentLevel; i < level; i++)
+        for (int i = WeaponStartLevel; i < level; i++)
         {
-            WeaponUpgraded?.Invoke();
-        }
-
-        if (_currentLevel != level)
-        {
-            _currentLevel = level;
+            _currentLevel++;
             ShowUpgradeMessage();
+            WeaponUpgraded?.Invoke();
+            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Weapon);
         }
 
         if (_currentLevel >= WeaponEndLevel)

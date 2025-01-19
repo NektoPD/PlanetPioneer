@@ -5,9 +5,15 @@ using UnityEngine;
 public class PlayerGoldView : MonoBehaviour
 {
     [SerializeField] private TMP_Text _goldAmount;
+    [SerializeField] private PlayerGoldHandler _playerGoldHandler;
 
     private IGoldHandler _handler;
-    
+
+    private void Start()
+    {
+        SetAmount(_playerGoldHandler.GoldAmount);
+    }
+
     private void SetAmount(int amount)
     {
         _goldAmount.text = amount.ToString();
