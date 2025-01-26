@@ -38,10 +38,9 @@ public class MainSceneInstaller : MonoInstaller
         Player player = Container.InstantiatePrefabForComponent<Player>(_prefab, _startPoint.position, Quaternion.identity, null);
 
         Container.Bind<Player>().FromInstance(player).AsSingle();
-        Container.Bind<IWeaponUpgrader>().FromInstance(player.GetComponentInChildren<WeaponUpgrader>()).AsSingle();
-        Container.Bind<IResourceHandler>().FromInstance(player.GetComponentInChildren<CatchedResourceHandler>())
-            .AsSingle();
-        Container.Bind<IGoldHandler>().FromInstance(player.GetComponentInChildren<PlayerGoldHandler>()).AsSingle();
-        Container.Bind<IResourceCatcher>().FromInstance(player.GetComponentInChildren<ResourceCatcher>()).AsSingle();
+        Container.Bind<IWeaponUpgrader>().FromInstance(player.Weapon.WeaponUpgrader).AsSingle();
+        Container.Bind<IResourceHandler>().FromInstance(player.CatchedResourceHandler).AsSingle();
+        Container.Bind<IGoldHandler>().FromInstance(player.GoldHandler).AsSingle();
+        Container.Bind<IResourceCatcher>().FromInstance(player.ResourceCatcher).AsSingle();
     }
 }

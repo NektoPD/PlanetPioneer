@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Zenject;
+﻿using Zenject;
 
-public class BootstrapInstaller : MonoInstaller
+namespace Sources.DI
 {
-    public override void InstallBindings()
+    public class BootstrapInstaller : MonoInstaller
     {
-        
+        public override void InstallBindings()
+        {
+            
+        }
     }
 }

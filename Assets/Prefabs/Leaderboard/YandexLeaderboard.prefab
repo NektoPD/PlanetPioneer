@@ -86,7 +86,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5632596001407050696}
-  - component: {fileID: 6425577800640981854}
   m_Layer: 0
   m_Name: YandexLeaderboard
   m_TagString: Untagged
@@ -110,21 +109,6 @@ Transform:
   - {fileID: 5758863993728309106}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6425577800640981854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4134982218435206489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 141b32020baae8c4db74475f03079415, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _leaderboardView: {fileID: 4493102815601618236}
-  _settingsMenu: {fileID: 0}
-  _mainMenuSceneMenu: {fileID: 0}
 --- !u!1 &4189525605153677226
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,7 +153,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5758863993728309106}
-  - component: {fileID: 4493102815601618236}
   m_Layer: 0
   m_Name: ViewLeaderboard
   m_TagString: Untagged
@@ -193,22 +176,6 @@ Transform:
   - {fileID: 3931503338598473695}
   m_Father: {fileID: 5632596001407050696}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4493102815601618236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4425777143394912730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7420f30f2b813824ab44d3d176269d52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _container: {fileID: 8417914008202585368}
-  _leaderboardElementPrefab: {fileID: 3238811313348219373, guid: 0af48929fa9e49a47b0b820b0831539f, type: 3}
-  _verticalSpacing: 74
-  _closeButton: {fileID: 5446526629820583773}
 --- !u!1 &4856846827088231233
 GameObject:
   m_ObjectHideFlags: 0

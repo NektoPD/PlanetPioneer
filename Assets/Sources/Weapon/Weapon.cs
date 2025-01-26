@@ -26,6 +26,8 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
     public event Action StartedGatheringResources;
     public event Action StopedGatheringResources;
 
+    public WeaponUpgrader WeaponUpgrader => _upgrader;
+
     private void Awake()
     {
         _resourceCatcher = GetComponent<ResourceCatcher>();

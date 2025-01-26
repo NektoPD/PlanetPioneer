@@ -7,7 +7,7 @@ using Zenject;
 [RequireComponent(typeof(PlayerUpgrader))]
 [RequireComponent(typeof(PlayerGoldHandler))]
 [RequireComponent(typeof(PlayerCollisionHandler))]
-public class Player : MonoBehaviour,IResourceTaker
+public class Player : MonoBehaviour, IResourceTaker
 {
     [SerializeField] private PlayerResourcesView _resourcesView;
     [SerializeField] private Weapon _weapon;
@@ -16,7 +16,7 @@ public class Player : MonoBehaviour,IResourceTaker
     [SerializeField] private CatchedResourceHandler _resourceHandler;
     [SerializeField] private PlayerAnimator _animator;
     [SerializeField] private Vector3 _startPosition;
-    
+
     private UpgradeSystem _upgradeSystem;
     private PlayerCollisionHandler _collisionHandler;
     private PlayerGoldHandler _goldHandler;
@@ -24,17 +24,22 @@ public class Player : MonoBehaviour,IResourceTaker
     private PlayerMover _mover;
     private Transform _transform;
     private RocketBuilder _rocketBuilder;
-    
+
     public event Action<Dictionary<Type, int>> ResourcesProvidedToBase;
     public event Action ResourceAddedToBag;
     public event Action ResourceRemovedFromBag;
     public event Action ResourceTaken;
 
+    public Weapon Weapon => _weapon;
+    public CatchedResourceHandler CatchedResourceHandler => _resourceHandler;
+    public PlayerGoldHandler GoldHandler => _goldHandler;
+    public ResourceCatcher ResourceCatcher => _resourceCatcher;
+
     public int CurrentGoldAmount => _goldHandler.GoldAmount;
     public float CurrentXPosition => _transform.position.x;
     public float CurrentYPosition => _transform.position.y;
     public float CurrentZPosition => _transform.position.z;
-    
+
     [Inject]
     private void Cunstruct(PlanetServicesProvider planetServices)
     {
@@ -84,12 +89,12 @@ public class Player : MonoBehaviour,IResourceTaker
         _weapon.SetResourceTaker(this);
         _mover.SetResourceGatherer(_weapon);
     }
-    
+
     public void SetCurrentPosition(Vector3 position)
     {
         _transform.position = position;
     }
-    
+
     private void IncreaseGoldAmount()
     {
         _goldHandler.IncreaseGoldAmount();

@@ -3453,7 +3453,6 @@ MonoBehaviour:
   _spawnPointPosition: {fileID: 2036276091}
   _baseUpgrader: {fileID: 1499704543}
   _crateSpawnSound: {fileID: 1365169479}
-  _videoAdShower: {fileID: 0}
 --- !u!114 &1432507518
 MonoBehaviour:
   m_ObjectHideFlags: 0
