@@ -1,5 +1,4 @@
 ﻿using System;
-using Agava.YandexGames;
 
 public interface IResourceCatcher
 {
