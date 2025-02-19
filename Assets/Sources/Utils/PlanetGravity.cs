@@ -5,7 +5,7 @@ using Zenject;
 public class PlanetGravity : MonoBehaviour
 {
     [SerializeField] private float _gravityConstant = 12f;
-    
+
     private Transform _planet;
     private Rigidbody _rigidbody;
 
@@ -13,7 +13,6 @@ public class PlanetGravity : MonoBehaviour
     private void Consturct(PlanetServicesProvider planetServices)
     {
         _planet = planetServices.PlanetPosition;
-
     }
 
     private void Awake()

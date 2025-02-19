@@ -1,4 +1,4 @@
- using System;
+using System;
 using UnityEngine;
 
 public class PlayerTutorialStatus : MonoBehaviour
@@ -10,9 +10,9 @@ public class PlayerTutorialStatus : MonoBehaviour
     private bool _isTutorialViewed;
 
     public event Action TutorialCompleted;
-    
+
     public bool IsTutorialCompleted => _isTutorialViewed;
-    
+
     private void OnEnable()
     {
         _tutorialWindow.TutorialViewed += CompleteTutorial;

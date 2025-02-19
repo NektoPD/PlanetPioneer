@@ -32,7 +32,7 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler, IResource
     public int CurrentCrystalAmount => _resources.GetValueOrDefault(typeof(Crystal));
     public int CurrentPlantAmount => _resources.GetValueOrDefault(typeof(Plant));
     public int CurrentAlienArtifactAmount => _resources.GetValueOrDefault(typeof(AlienArtifact));
-    
+
     private void Awake()
     {
         _maxCapacityConstraints[typeof(Iron)] = _startIronCapacity;
@@ -97,7 +97,7 @@ public class CatchedResourceHandler : MonoBehaviour, ICapacityHandler, IResource
             _resources[resourceType] = 0;
             return;
         }
-        
+
         _resources[resourceType] = count;
         ResourceAdded?.Invoke();
         ResourceAmountChanged?.Invoke();

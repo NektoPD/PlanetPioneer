@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 using Zenject;
 
-public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
+public class PlayerGoldHandler : MonoBehaviour, IGoldHandler
 {
     private const string MaximumGoldAmounReachedErrorMessage = "Maximum gold amount reached";
     private const string NotEnoughGoldToDecreaseErrorrMessage = "Not enough gold to decrease by the specified amount";
-    
+
     private UIPopUpWindowShower _windowShower;
 
     private int _goldMultiplier = 1;
@@ -15,13 +15,13 @@ public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 
     public event Action AmountChanged;
     public event Action<int> GoldAmountChanged;
-    
+
     public int GoldAmount => _goldAmount;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices)
+    private void Construct(UIServicesProvider uiServices)
     {
-        _windowShower = UIServices.PopUpWindow;
+        _windowShower = uiServices.PopUpWindow;
     }
 
     public void IncreaseGoldAmount()
@@ -39,7 +39,7 @@ public class PlayerGoldHandler : MonoBehaviour,IGoldHandler
 
     public void DecreaceGoldAmount(int amount)
     {
-        if(amount < 0)
+        if (amount < 0)
             throw new ArgumentOutOfRangeException(nameof(amount));
 
         if (_goldAmount - amount < 0)

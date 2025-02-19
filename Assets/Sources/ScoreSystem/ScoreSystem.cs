@@ -4,7 +4,6 @@ using Zenject;
 
 public class ScoreSystem : MonoBehaviour
 {
-    private RocketBuilder _rocketBuilder;
     private float _timer;
 
     public float Timer => _timer;
@@ -12,7 +11,6 @@ public class ScoreSystem : MonoBehaviour
     [Inject]
     private void Construct(PlanetServicesProvider planetServicesProvider)
     {
-        _rocketBuilder = planetServicesProvider.RocketBuilder;
     }
 
     private void Update()
@@ -27,5 +25,4 @@ public class ScoreSystem : MonoBehaviour
 
         _timer = value;
     }
-    
 }

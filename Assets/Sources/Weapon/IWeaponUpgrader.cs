@@ -1,12 +1,8 @@
 ﻿using System;
-using UnityEngine.Experimental.GlobalIllumination;
 
 public interface IWeaponUpgrader
 {
     public event Action WeaponUpgraded;
-    public event Action WeaponFullyUpgraded;
-    public event Action WeaponSecondLevelUpgraded;
-    public event Action WeaponThirdLevelUpgraded;
 
     public int StartLevel { get; }
     public int SecondLevel { get; }

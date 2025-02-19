@@ -15,6 +15,14 @@ public class SaveSystem : ISaveSystem
     private Player _player;
     private ScoreSystem _scoreSystem;
 
+    public enum ResourceType
+    {
+        Iron,
+        Crystal,
+        Plant,
+        AlienArtifact
+    }
+
     [Inject]
     private void Construct(Player player, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader,
         IGoldHandler goldHandler,
@@ -122,34 +130,25 @@ public class SaveSystem : ISaveSystem
             }
         };
     }
-}
 
-[Serializable]
-public class SaveData
-{
-    public int WeaponLevel;
-    public int BaseUpgradesLeft;
-    public int RocketLevel;
-    public int GoldAmount;
-    public float PlayerXPosition;
-    public float PlayerYPosition;
-    public float PlayerZPosition;
-    public float Timer;
-    public List<ResourceDto> Resources = new List<ResourceDto>();
-}
+    [Serializable]
+    public struct ResourceDto
+    {
+        public ResourceType ResourceType;
+        public int Count;
+    }
 
-[Serializable]
-public struct ResourceDto
-{
-    public ResourceType ResourceType;
-    public int Count;
+    [Serializable]
+    public class SaveData
+    {
+        public int WeaponLevel;
+        public int BaseUpgradesLeft;
+        public int RocketLevel;
+        public int GoldAmount;
+        public float PlayerXPosition;
+        public float PlayerYPosition;
+        public float PlayerZPosition;
+        public float Timer;
+        public List<ResourceDto> Resources = new List<ResourceDto>();
+    }
 }
-
-public enum ResourceType
-{
-    Iron,
-    Crystal,
-    Plant,
-    AlienArtifact
-}
-

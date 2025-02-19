@@ -1,6 +1,6 @@
 ﻿using System;
 
-    public interface IShooter
-    {
-        public event Action ShootButtonPressed;
-    }
+public interface IShooter
+{
+    public event Action ShootButtonPressed;
+}

@@ -6,7 +6,6 @@ namespace Sources.DI
     {
         public override void InstallBindings()
         {
-            
         }
     }
 }

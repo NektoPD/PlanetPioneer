@@ -8,9 +8,10 @@ public class UIPopUpWindowShower : MonoBehaviour
 {
     private const string PopUpAnimationName = "PopUpAnimation";
 
+    private readonly float _delayBetweenAnimations = 3;
+
     [SerializeField] private TMP_Text _popupText;
 
-    private readonly float _delayBetweenAnimations = 3;
     private Animator _animator;
 
     private CanvasGroup _canvas;
@@ -43,7 +44,7 @@ public class UIPopUpWindowShower : MonoBehaviour
     private IEnumerator ProcessMessageQueue()
     {
         WaitForSeconds delay = new WaitForSeconds(_delayBetweenAnimations);
-        
+
         while (_popupQueue.Count > 0)
         {
             var (message, onMessageShown) = _popupQueue.Dequeue();
@@ -54,7 +55,7 @@ public class UIPopUpWindowShower : MonoBehaviour
             _canvas.alpha = 0;
             onMessageShown?.Invoke();
         }
-        
+
         StopCoroutine();
     }
 

@@ -20,9 +20,9 @@ public class PlayerUpgrader : MonoBehaviour, IPlayerUpgrader
     public event Action UpgradedGatherRadius;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices, PlanetServicesProvider planetServices)
+    private void Construct(UIServicesProvider uiServices, PlanetServicesProvider planetServices)
     {
-        _windowShower = UIServices.PopUpWindow;
+        _windowShower = uiServices.PopUpWindow;
         _baseUpgrader = planetServices.BaseUpgrader;
         _baseUpgrader.BaseUpgraded += ProcessUpgrade;
         _baseUpgrader.LoadedBaseUpgrades += ProcessUpgrade;

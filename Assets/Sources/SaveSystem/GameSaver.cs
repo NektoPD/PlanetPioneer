@@ -5,7 +5,7 @@ using Zenject;
 public class GameSaver : MonoBehaviour
 {
     [SerializeField] private GameEnder _gameEnder;
-    
+
     private BaseUpgrader _baseUpgrader;
     private RocketBuilder _rocketBuilder;
     private IWeaponUpgrader _weaponUpgrader;
@@ -15,7 +15,8 @@ public class GameSaver : MonoBehaviour
     private IResourceCatcher _resourceCatcher;
 
     [Inject]
-    private void Construct(ISaveSystem saveSystem, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader, IGoldHandler goldHandler,IResourceCatcher resourceCatcher,  PlanetServicesProvider planetServicesProvider)
+    private void Construct(ISaveSystem saveSystem, IResourceHandler resourceHandler, IWeaponUpgrader weaponUpgrader,
+        IGoldHandler goldHandler, IResourceCatcher resourceCatcher, PlanetServicesProvider planetServicesProvider)
     {
         _weaponUpgrader = weaponUpgrader;
         _saveSystem = saveSystem;

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Zenject;
 
-public class ResourceCatcher : MonoBehaviour,IResourceCatcher
+public class ResourceCatcher : MonoBehaviour, IResourceCatcher
 {
     private const float UpgradedLerpDuration = 1f;
     private const float UpgradedRadius = 1.2f;
@@ -32,10 +32,10 @@ public class ResourceCatcher : MonoBehaviour,IResourceCatcher
     public event Action StoppedGatheringResources;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices)
+    private void Construct(UIServicesProvider uiServices)
     {
-        _sliderShower = UIServices.UISlider;
-        _popUpWindowShower = UIServices.PopUpWindow;
+        _sliderShower = uiServices.UISlider;
+        _popUpWindowShower = uiServices.PopUpWindow;
     }
 
     private void Awake()
@@ -74,7 +74,7 @@ public class ResourceCatcher : MonoBehaviour,IResourceCatcher
 
         _capacityHandler = handler;
     }
-    
+
     public void SetPlayerUpgrader(IPlayerUpgrader playerUpgrader)
     {
         if (playerUpgrader == null)
@@ -108,7 +108,8 @@ public class ResourceCatcher : MonoBehaviour,IResourceCatcher
 
             if (_capacityHandler.IsMaxCapacityReached(resourceType))
             {
-                _popUpWindowShower.AddMessageToQueue($"Cannot catch more {resourceType.Name}. Maximum capacity reached.");
+                _popUpWindowShower.AddMessageToQueue(
+                    $"Cannot catch more {resourceType.Name}. Maximum capacity reached.");
                 _errorSound.PlaySound();
                 return;
             }
@@ -128,13 +129,19 @@ public class ResourceCatcher : MonoBehaviour,IResourceCatcher
         StartedGatheringResources?.Invoke();
 
         _sliderShower.ActivateSlider(_lerpDuration);
-        yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(resource.transform, resource.transform.position, 
-            _gunPosition.position, resource.transform.localScale, _targetScale,_lerpDuration));
+        yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(
+            resource.transform,
+            resource.transform.position,
+            _gunPosition.position,
+            resource.transform.localScale,
+            _targetScale,
+            _lerpDuration
+        ));
 
         _catchedResourceSound.PlaySound();
         StoppedGatheringResources?.Invoke();
     }
-    
+
     private void UpgradeResourceGatherSpeed()
     {
         _lerpDuration = UpgradedLerpDuration;

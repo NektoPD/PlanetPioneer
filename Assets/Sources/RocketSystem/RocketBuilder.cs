@@ -30,7 +30,7 @@ public class RocketBuilder : MonoBehaviour
     {
         _parts = GetComponentsInChildren<RocketPart>();
         _collider = GetComponent<Collider>();
-        
+
         foreach (RocketPart part in _parts)
         {
             part.gameObject.SetActive(false);
@@ -101,12 +101,12 @@ public class RocketBuilder : MonoBehaviour
 
     public void SetCurrenBuildParts(int currentBuildParts)
     {
-        if(currentBuildParts > MaxParts || currentBuildParts < 0)
+        if (currentBuildParts is > MaxParts or < 0)
             throw new ArgumentOutOfRangeException(nameof(currentBuildParts));
 
         _currentBuildParts = currentBuildParts;
 
-        for(int i = 0; i < _currentBuildParts; i++)
+        for (int i = 0; i < _currentBuildParts; i++)
         {
             RocketPart currentPart = _parts.FirstOrDefault(part => !part.gameObject.activeSelf);
 
@@ -114,7 +114,7 @@ public class RocketBuilder : MonoBehaviour
             {
                 currentPart.gameObject.SetActive(true);
                 _upgradeSystemView.UpgradeRocketSlots();
-                _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Rocket);
+                _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeSystem.UpgradeType.Rocket);
             }
         }
 

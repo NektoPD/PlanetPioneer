@@ -3,7 +3,7 @@ using UnityEngine;
 using YG;
 using Zenject;
 
-public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
+public class UpgradeSystem : MonoBehaviour, IUpgradeSystem
 {
     private const int UpgradeMultiplier = 2;
     private const string DontHaveEnoughGoldToUpgradeError = "Don't have enough gold to upgrade";
@@ -29,6 +29,13 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     public event Action<int> WeaponUpgradeCostChanged;
     public event Action<int> BaseUpgradeCostChanged;
     public event Action<int> RocketUpgradeCostChanged;
+
+    public enum UpgradeType
+    {
+        Weapon,
+        Base,
+        Rocket
+    }
 
     [Inject]
     private void Construct(Player player)
@@ -72,7 +79,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(collider.TryGetComponent(out Player player) && player == _player)
+        if (collider.TryGetComponent(out Player player) && player == _player)
         {
             PlayerSteppedIn?.Invoke();
         }
@@ -132,7 +139,7 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
     {
         return upgradeCost * UpgradeMultiplier;
     }
-    
+
     public void IncreaseSpecificUpgradeCost(UpgradeType upgradeType)
     {
         switch (upgradeType)
@@ -156,11 +163,4 @@ public class UpgradeSystem : MonoBehaviour,IUpgradeSystem
                 throw new ArgumentOutOfRangeException(nameof(upgradeType), "Invalid upgrade type");
         }
     }
-}
-
-public enum UpgradeType
-{
-    Weapon,
-    Base,
-    Rocket
 }

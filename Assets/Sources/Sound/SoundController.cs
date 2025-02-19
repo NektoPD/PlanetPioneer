@@ -18,7 +18,7 @@ public class SoundController : MonoBehaviour
     private void OnEnable()
     {
         Application.focusChanged += ToggleAllSounds;
-        YandexGame.GameplayStatusChanged += (() => ToggleAllSounds(YandexGame.isGamePlaying));
+        YandexGame.GameplayStatusChanged += () => ToggleAllSounds(YandexGame.isGamePlaying);
         YandexGame.OpenFullAdEvent += () => ToggleAllSounds(false);
         YandexGame.CloseFullAdEvent += () => ToggleAllSounds(true);
     }
@@ -26,14 +26,14 @@ public class SoundController : MonoBehaviour
     private void OnDisable()
     {
         Application.focusChanged -= ToggleAllSounds;
-        YandexGame.GameplayStatusChanged -= (() => ToggleAllSounds(YandexGame.isGamePlaying));
+        YandexGame.GameplayStatusChanged -= () => ToggleAllSounds(YandexGame.isGamePlaying);
         YandexGame.OpenFullAdEvent -= () => ToggleAllSounds(false);
         YandexGame.CloseFullAdEvent -= () => ToggleAllSounds(true);
     }
 
     private void Update()
     {
-        if(!YandexGame.isGamePlaying)
+        if (!YandexGame.isGamePlaying)
             ToggleAllSounds(false);
     }
 
@@ -51,7 +51,7 @@ public class SoundController : MonoBehaviour
     {
         _audioMixer.audioMixer.SetFloat(BackgroundVolumeMixerName, enabled ? MaxVolume : MinVolume);
     }
-    
+
     private void ToggleAllSounds(bool hasFocus)
     {
         if (!hasFocus)
@@ -60,7 +60,7 @@ public class SoundController : MonoBehaviour
             AudioListener.pause = true;
             return;
         }
-        
+
         AudioListener.volume = 1;
         AudioListener.pause = false;
     }

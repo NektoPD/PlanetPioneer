@@ -1,11 +1,9 @@
 using System;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 
 public class TutorialWindow : MonoBehaviour
 {
-    // [SerializeField] private Button _skipTutorialText;
     [SerializeField] private Button _startNextTutorialText;
     [SerializeField] private PlayerTutorialStatus _playerTutorialStatus;
 
@@ -25,17 +23,13 @@ public class TutorialWindow : MonoBehaviour
     private void OnEnable()
     {
         _playerInput.Enable();
-        //_playerInput.Player.Skip.performed += _ => OnSkipButtonPressed();
-        
         _startNextTutorialText.onClick.AddListener(OnSkipButtonPressed);
     }
 
     private void OnDisable()
     {
         _playerInput.Disable();
-       // _playerInput.Player.Skip.performed -= _ => OnSkipButtonPressed();
-       
-       _startNextTutorialText.onClick.RemoveListener(OnSkipButtonPressed);
+        _startNextTutorialText.onClick.RemoveListener(OnSkipButtonPressed);
     }
 
     private void Start()
@@ -71,27 +65,11 @@ public class TutorialWindow : MonoBehaviour
         {
             _textBoxes[_currentTutorialWindow].gameObject.SetActive(true);
             _textBoxes[_currentTutorialWindow].StartDisplayText();
-           // _skipTutorialText.gameObject.SetActive(true);
-            
         }
-    }
-
-    private bool IsValidCurrentTutorialWindow()
-    {
-        return _textBoxes.Length > 0 && _textBoxes[_currentTutorialWindow] != null;
-    }
-
-    private void HandleTutorialTextDisplayed()
-    {
-       // _skipTutorialText.gameObject.SetActive(false);
-        //_startNextTutorialText.gameObject.SetActive(true);
     }
 
     private void OnSkipButtonPressed()
     {
-        /*if (_textBoxes[_currentTutorialWindow].DisplayedAllText() == false)
-            return;*/
-
         ProceedToNextTutorialWindow();
     }
 
@@ -108,8 +86,6 @@ public class TutorialWindow : MonoBehaviour
         else
         {
             ActivateCurrentTextBox();
-           // _skipTutorialText.gameObject.SetActive(true);
-           // _startNextTutorialText.gameObject.SetActive(false);
         }
     }
 }

@@ -24,7 +24,7 @@ public class UpgradeSystemView : MonoBehaviour
     [SerializeField] private UIUpgradeImageSlot[] _baseUpgradeSlots;
     [SerializeField] private UIUpgradeImageSlot[] _weaponUpgradeSlots;
     [SerializeField] private UIUpgradeImageSlot[] _rocketUpgradeSlots;
-    
+
     private WeaponUpgrader _weaponUpgrader;
 
     private CanvasGroup _canvas;
@@ -144,13 +144,13 @@ public class UpgradeSystemView : MonoBehaviour
         DisableButton(_upgradeBaseButton);
         _baseUpgradeCost.enabled = false;
         _baseUpgradeText.enabled = false;
-        
+
         _upgradeRocketButton.gameObject.SetActive(true);
         _rocketUpgradeCost.enabled = true;
         _rocketUpgradeText.enabled = true;
-        
+
         RocketUpgradeButtonEnabled?.Invoke();
-        
+
         foreach (var element in _rocketUpgradeSlots)
         {
             element.gameObject.SetActive(true);
@@ -171,7 +171,7 @@ public class UpgradeSystemView : MonoBehaviour
 
     public void SetWeaponUpgrader(WeaponUpgrader weaponUpgrader)
     {
-        if(weaponUpgrader == null)
+        if (weaponUpgrader == null)
             throw new ArgumentNullException(nameof(weaponUpgrader));
 
         _weaponUpgrader = weaponUpgrader;

@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ObjectPool<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class ObjectPool<T> : MonoBehaviour
+    where T : MonoBehaviour
 {
+    private readonly Queue<T> _queue = new Queue<T>();
+    private readonly List<T> _activeObjects = new List<T>();
+
     [SerializeField] private Transform _container;
     [SerializeField] private int _capacity;
     [SerializeField] private Transform _planetPosition;
-
-    private readonly Queue<T> _queue = new Queue<T>();
-    private readonly List<T> _activeObjects = new List<T>();
 
     public event Action ObjectReturnedToPool;
 

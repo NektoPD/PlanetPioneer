@@ -24,16 +24,15 @@ public class PlanetRotationConstrain : MonoBehaviour
         if (_planet == null)
             return;
 
-        Quaternion rotation = Quaternion.FromToRotation(-_transformToRotate.up, _planet.position - _transformToRotate.position);
+        Quaternion rotation =
+            Quaternion.FromToRotation(-_transformToRotate.up, _planet.position - _transformToRotate.position);
         _transformToRotate.rotation = rotation * _transformToRotate.rotation;
     }
 
     public void SetPlanetPosition(Transform planetPosition)
     {
-        if (planetPosition == null)
-        {
-            throw new ArgumentNullException(nameof (planetPosition));
-        }
+        if (!planetPosition)
+            throw new ArgumentNullException(nameof(planetPosition));
 
         _planet = planetPosition;
     }

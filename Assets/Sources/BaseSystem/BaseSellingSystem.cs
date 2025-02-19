@@ -11,7 +11,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     private const int CrystalValue = 2;
     private const int PlantValue = 4;
     private const int AlienArtifactValue = 6;
-    
+
     [SerializeField] private Transform _baseStartSellingPoint;
     [SerializeField] private Transform _baseFinishSellingPoint;
     [SerializeField] private float _lerpDuration;
@@ -21,7 +21,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
     [SerializeField] private GameObject _plantPrefab;
     [SerializeField] private GameObject _alinArtifactPrefab;
     [SerializeField] private Transform _resourceToLerpSpawnPoint;
-    
+
     private GameObject _ironToLerp;
     private GameObject _crystalToLerp;
     private GameObject _plantToLerp;
@@ -48,7 +48,8 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
         _ironToLerp = Instantiate(_ironPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
         _crystalToLerp = Instantiate(_crystalPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
         _plantToLerp = Instantiate(_plantPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
-        _alienArtifactToLerp = Instantiate(_alinArtifactPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
+        _alienArtifactToLerp =
+            Instantiate(_alinArtifactPrefab, _resourceToLerpSpawnPoint.position, Quaternion.identity);
     }
 
     private void OnDisable()
@@ -70,7 +71,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
         _glowingZoneParticleSystem.DeactivateParticle();
 
         _resourcesToProcess = new Dictionary<Type, int>(resources);
-        
+
         if (!_isProcessing)
         {
             StartCoroutine(ProcessResourceQueue());
@@ -90,7 +91,7 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
                 yield return LerpResource(resourcePair.Key);
             }
         }
-        
+
         _isProcessing = false;
     }
 
@@ -101,7 +102,10 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
             resourceType == typeof(Crystal) ? _crystalToLerp.transform :
             resourceType == typeof(Plant) ? _plantToLerp.transform :
             _alienArtifactToLerp.transform,
-            _baseStartSellingPoint.position, _baseFinishSellingPoint.position, _lerpDuration));
+            _baseStartSellingPoint.position,
+            _baseFinishSellingPoint.position,
+            _lerpDuration
+        ));
     }
 
     private void IndicateResourceValue(Type resourceType, int count)
@@ -124,4 +128,3 @@ public class BaseSellingSystem : MonoBehaviour, IInteractable
         }
     }
 }
-

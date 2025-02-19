@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CatchedResourceHandler))]
 [RequireComponent(typeof(WeaponUpgrader))]
 [RequireComponent(typeof(ParticleSpawner))]
-public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
+public class Weapon : MonoBehaviour, IShooter, IResourceGatherer
 {
     [SerializeField] private SoundPlayer _weaponSound;
     [SerializeField] private PlayerUpgrader _playerUpgrader;
@@ -63,12 +63,12 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
         _resourceCatcher.SetCapacityChecker(_resourceCatcherHandler);
         _resourceCatcher.SetWeaponLevelChecker(_weaponLevelChecker);
         _resourceCatcher.SetPlayerUpgrader(_playerUpgrader);
-        
+
         _resourceCatcherHandler.SetResourceCatcher(_resourceCatcher);
         _resourceCatcherHandler.SetPlayerUpgrader(_playerUpgrader);
         _weaponLevelChecker.SetWeaponUpgrader(_upgrader);
         _resourceView.SetCapacityHandler(_resourceCatcherHandler);
-        
+
         _playerInput.Player.Gather.performed += ctx => ShootButtonPressed?.Invoke();
     }
 
@@ -88,7 +88,7 @@ public class Weapon : MonoBehaviour,IShooter,IResourceGatherer
     {
         if (resourceTaker == null)
             throw new ArgumentNullException(nameof(resourceTaker));
-        
+
         _resourceCatcherHandler.SetResourceTaker(resourceTaker);
     }
 

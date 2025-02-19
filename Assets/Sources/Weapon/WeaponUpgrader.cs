@@ -31,9 +31,9 @@ public class WeaponUpgrader : MonoBehaviour, IWeaponUpgrader
     public int CurrentLevel => _currentLevel;
 
     [Inject]
-    private void Construct(UIServicesProvider UIServices, PlanetServicesProvider planetServicesProvider)
+    private void Construct(UIServicesProvider uiServices, PlanetServicesProvider planetServicesProvider)
     {
-        _windowShower = UIServices.PopUpWindow;
+        _windowShower = uiServices.PopUpWindow;
         _upgradeSystem = planetServicesProvider.UpgradeSystem;
     }
 
@@ -83,13 +83,13 @@ public class WeaponUpgrader : MonoBehaviour, IWeaponUpgrader
     {
         if (_currentLevel > WeaponEndLevel || _currentLevel < WeaponStartLevel)
             throw new ArgumentOutOfRangeException(nameof(level));
-        
+
         for (int i = WeaponStartLevel; i < level; i++)
         {
             _currentLevel++;
             ShowUpgradeMessage();
             WeaponUpgraded?.Invoke();
-            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Weapon);
+            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeSystem.UpgradeType.Weapon);
         }
 
         if (_currentLevel >= WeaponEndLevel)

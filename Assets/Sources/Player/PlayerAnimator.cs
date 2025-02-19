@@ -5,9 +5,11 @@ public class PlayerAnimator : MonoBehaviour
 {
     private const string RunningAnimationState = "IsRunning";
     private const string JumpAnimationTriggerName = "Jump";
-    private Animator _animator;
+
     private readonly int _jumpTrigger = Animator.StringToHash(JumpAnimationTriggerName);
     private readonly int _runTrigger = Animator.StringToHash(RunningAnimationState);
+
+    private Animator _animator;
 
     private void Awake()
     {

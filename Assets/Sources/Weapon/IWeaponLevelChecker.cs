@@ -1,5 +1,4 @@
-﻿
-    public interface IWeaponLevelChecker
-    {
-        public bool IsWeaponLevelSufficient(Resource resource);
-    }
+﻿public interface IWeaponLevelChecker
+{
+    public bool IsWeaponLevelSufficient(Resource resource);
+}

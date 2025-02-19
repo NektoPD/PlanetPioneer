@@ -35,18 +35,16 @@ public class CrateSpawner : ObjectPool<Crate>
     {
         SpawnCrate();
     }
-    
+
     private void SpawnCrate()
     {
-        if(TryGetObject(out Crate crate, _prefab))
-        {
-            crate.transform.position = _spawnPointPosition.position;
-            crate.transform.rotation = Quaternion.Euler(transform.position.x, 180f, transform.position.z);
-            crate.Exploded += ReturnToPool;
-            crate.SetGoldSpawner(_goldSpawner);
-            _particleSpawner.ActivateParticle();
-            _crateSpawnSound.PlaySound();
-        }
+        if (!TryGetObject(out Crate crate, _prefab)) return;
+        crate.transform.position = _spawnPointPosition.position;
+        crate.transform.rotation = Quaternion.Euler(transform.position.x, 180f, transform.position.z);
+        crate.Exploded += ReturnToPool;
+        crate.SetGoldSpawner(_goldSpawner);
+        _particleSpawner.ActivateParticle();
+        _crateSpawnSound.PlaySound();
     }
 
     private void ReturnToPool(Crate crate)

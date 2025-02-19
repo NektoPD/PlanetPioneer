@@ -20,8 +20,7 @@ public class SpawnArea : MonoBehaviour
         Vector3 randomPoint = new Vector3(
             Random.Range(bounds.min.x, bounds.max.x),
             bounds.center.y,
-            Random.Range(bounds.min.z, bounds.max.z)
-        );
+            Random.Range(bounds.min.z, bounds.max.z));
 
         Vector3 rayDirection = (planetTransform.position - randomPoint).normalized;
 
@@ -38,4 +37,3 @@ public class SpawnArea : MonoBehaviour
         }
     }
 }
-

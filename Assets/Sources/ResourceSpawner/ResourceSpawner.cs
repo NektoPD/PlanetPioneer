@@ -8,11 +8,11 @@ public class ResourceSpawner : ObjectPool<Resource>
     private const string NoAvailableSpawnPointsErrorMessage = "No spawn points";
     private const int CooldownBetweenSpawn = 5;
 
+    private readonly List<SpawnArea> _spawnPoints = new List<SpawnArea>();
+
     [SerializeField] private Resource _prefab;
     [SerializeField] private int _spawnCount = 10;
     [SerializeField] private BaseSellingSystem _sellingSystem;
-
-    private readonly List<SpawnArea> _spawnPoints = new List<SpawnArea>();
 
     private void Awake()
     {
@@ -45,10 +45,8 @@ public class ResourceSpawner : ObjectPool<Resource>
 
         if (ActiveObjects.Count >= Capacity)
             return;
-        
-        StartCoroutine(SpawnWithCooldown());
 
-        
+        StartCoroutine(SpawnWithCooldown());
     }
 
     private IEnumerator SpawnWithCooldown()
@@ -90,7 +88,7 @@ public class ResourceSpawner : ObjectPool<Resource>
 
     public void ReturnResourceToPull(Resource resource)
     {
-        if(resource == null)
+        if (resource == null)
             throw new ArgumentNullException(nameof(resource));
 
         PutObject(resource);

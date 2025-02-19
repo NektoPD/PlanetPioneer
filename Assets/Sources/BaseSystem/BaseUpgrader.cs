@@ -28,7 +28,7 @@ public class BaseUpgrader : MonoBehaviour
         {
             unit.gameObject.SetActive(false);
         }
-        
+
         _maximumUpgrades = _baseUnits.Length;
         _currentUpgrades = 0;
     }
@@ -102,7 +102,7 @@ public class BaseUpgrader : MonoBehaviour
 
             currentUnit.gameObject.SetActive(true);
             LoadedBaseUpgrades?.Invoke();
-            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeType.Base);
+            _upgradeSystem.IncreaseSpecificUpgradeCost(UpgradeSystem.UpgradeType.Base);
         }
     }
 }

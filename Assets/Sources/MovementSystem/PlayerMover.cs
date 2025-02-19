@@ -91,7 +91,7 @@ public class PlayerMover : MonoBehaviour
         Vector3 forward = _transform.forward * (_inputVector.y + _joystick.Vertical);
         Vector3 right = _transform.right * (_inputVector.x + _joystick.Horizontal);
         _moveDirection = (forward + right).normalized * _speed;
-        
+
         _rigidbody.velocity = _moveDirection;
 
         if (_moveDirection.sqrMagnitude == 0)

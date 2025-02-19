@@ -26,7 +26,7 @@ public class ResourceIndicator : MonoBehaviour
     private void IndicateResourceType(Resource resource)
     {
         var resourceType = resource.GetType();
-        
+
         if (resourceType == typeof(Iron))
             _ironResourceSpawner.ReturnResourceToPull(resource);
         else if (resourceType == typeof(Crystal))
@@ -35,5 +35,5 @@ public class ResourceIndicator : MonoBehaviour
             _plantResourceSpawner.ReturnResourceToPull(resource);
         else if (resourceType == typeof(AlienArtifact))
             _alienArtifactResourceSpawner.ReturnResourceToPull(resource);
-    } 
+    }
 }

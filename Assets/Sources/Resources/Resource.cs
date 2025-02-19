@@ -5,5 +5,4 @@ using UnityEngine;
 [Serializable]
 public class Resource : MonoBehaviour
 {
-    
 }

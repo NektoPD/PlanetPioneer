@@ -30,7 +30,7 @@ public class GoldSpawner : ObjectPool<Gold>
     {
         _sellingSystem.IndicatedResourceValue -= StartSpawning;
     }
-    
+
     public Gold GetGold()
     {
         if (TryGetObject(out Gold gold, _prefab))
@@ -52,7 +52,8 @@ public class GoldSpawner : ObjectPool<Gold>
             {
                 gold.transform.position = _startSpawnPosition.position;
                 gold.IsObtained += ReturnToPull;
-                yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(gold.transform, _startSpawnPosition.position, _endSpawnPosition.position, _lerpSpeed));
+                yield return StartCoroutine(TargetPositionLerper.LerpToTargetPosition(gold.transform,
+                    _startSpawnPosition.position, _endSpawnPosition.position, _lerpSpeed));
                 Vector3 randomPosition = GetRandomPointInPlane();
                 gold.transform.position = randomPosition;
             }
@@ -60,7 +61,7 @@ public class GoldSpawner : ObjectPool<Gold>
 
         _isSpawning = false;
     }
-    
+
     private void StartSpawning(int spawnCount)
     {
         if (!_isSpawning)
@@ -73,8 +74,7 @@ public class GoldSpawner : ObjectPool<Gold>
         Vector3 randomPoint = new Vector3(
             Random.Range(bounds.min.x, bounds.max.x),
             bounds.max.y,
-            Random.Range(bounds.min.z, bounds.max.z)
-        );
+            Random.Range(bounds.min.z, bounds.max.z));
 
         return randomPoint;
     }

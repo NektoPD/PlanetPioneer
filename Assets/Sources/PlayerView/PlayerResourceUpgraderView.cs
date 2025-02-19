@@ -22,16 +22,16 @@ public class PlayerResourceUpgraderView : MonoBehaviour
         _weaponUpgrader.WeaponThirdLevelUpgraded -= EnablePlantResourceSlot;
     }
 
-
     private void EnableResourceSlot(ResourceSlot resourceSlot)
     {
         resourceSlot.gameObject.SetActive(true);
     }
+
     private void EnableCrystalResourceSlot()
     {
         EnableResourceSlot(_crystalResourceSlot);
     }
-    
+
     private void EnablePlantResourceSlot()
     {
         EnableResourceSlot(_plantResourceSlot);

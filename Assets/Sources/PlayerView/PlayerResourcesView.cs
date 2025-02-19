@@ -42,9 +42,8 @@ public class PlayerResourcesView : MonoBehaviour
     private void OnDisable()
     {
         _resourceHandler.ResourceAmountChanged -= UpgradeResourceAmount;
-        _capacityHandler.MaxCapacityUpdated -= UpdateMaxResourceAmount;
     }
-    
+
     public void SetResourceHandler(IResourceHandler resourceHandler)
     {
         if (resourceHandler == null)
@@ -54,7 +53,6 @@ public class PlayerResourcesView : MonoBehaviour
         UpgradeResourceAmount();
         _resourceHandler.ResourceAmountChanged += UpgradeResourceAmount;
     }
-    
 
     public void SetCapacityHandler(ICapacityHandler capacityHandler)
     {
@@ -62,7 +60,6 @@ public class PlayerResourcesView : MonoBehaviour
             throw new ArgumentNullException(nameof(capacityHandler));
 
         _capacityHandler = capacityHandler;
-        _capacityHandler.MaxCapacityUpdated += UpdateMaxResourceAmount;
         UpdateMaxResourceAmount();
     }
 
@@ -80,7 +77,7 @@ public class PlayerResourcesView : MonoBehaviour
             }
         }
     }
-    
+
     private void UpdateMaxResourceAmount()
     {
         foreach (var field in _maxResourceAmountsTextFields)
